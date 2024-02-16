@@ -72,6 +72,7 @@ WSGI_APPLICATION = 'Projet.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+# changer et mettre un serv postgresql
 
 DATABASES = {
     'default': {
