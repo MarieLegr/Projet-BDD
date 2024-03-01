@@ -53,7 +53,6 @@ class receiver(models.Model):
     receiver = models.ForeignKey(email, on_delete=models.CASCADE)
     mail = models.ForeignKey(Mail, on_delete=models.CASCADE)
     type = models.CharField(max_length=100)
-    id_intext = models.ForeignKey(IntExt, on_delete=models.CASCADE)
 
 
 
