@@ -11,7 +11,7 @@ class Category(models.Model):
 class Employee(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
-    category_id = models.ForeignKey(category, on_delete=models.CASCADE, default=1)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f'{self.nom} {self.prenom}'
@@ -26,7 +26,7 @@ class IntExt(models.Model):
 
 class Email(models.Model):
     email = models.EmailField()
-    emp_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     intext_id = models.ForeignKey(IntExt, on_delete=models.CASCADE)
 
 
@@ -34,25 +34,23 @@ class Email(models.Model):
         return self.email
 
 
-
-
 class Mail(models.Model):
     date = models.DateTimeField()
     subject = models.CharField(max_length=150)
     content = models.TextField()
-    sender = models.ForeignKey(email, on_delete=models.CASCADE)
+    sender = models.ForeignKey(Email, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.date} {self.content}'
+        return f'{self.date} {self.subject} {self.content}'
 
 
 class Receiver(models.Model):
-    receiver = models.ForeignKey(email, on_delete=models.CASCADE)
+    receiver = models.ForeignKey(Email, on_delete=models.CASCADE)
     mail_id = models.ForeignKey(Mail, on_delete=models.CASCADE)
-    type = models.CharField(max_length=100)
+    type_r = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.type
+        return self.type_r
 
 
 
