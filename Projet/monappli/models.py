@@ -20,7 +20,7 @@ class Employee(models.Model):
 class AdresseMail(models.Model):
     adressemail = models.EmailField()
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    intext_id = models.BooleanField()
+    intext = models.BooleanField()
 
 
     def __str__(self):
