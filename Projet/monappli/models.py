@@ -11,7 +11,7 @@ class Category(models.Model):
 class Employee(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.nom} {self.prenom}'
