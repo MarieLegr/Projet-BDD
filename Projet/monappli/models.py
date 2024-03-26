@@ -31,7 +31,7 @@ class Mail(models.Model):
     date = models.DateTimeField()
     subject = models.CharField(max_length=150,null=True)
     content = models.TextField()
-    sender = models.ForeignKey(AdresseMail, on_delete=models.CASCADE)
+    sender = models.ForeignKey(AdresseMail, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.date} {self.subject} {self.content}'

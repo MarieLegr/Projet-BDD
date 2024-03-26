@@ -80,7 +80,7 @@ def parcourir_dossier(dossier):
                     adresse.save()      
 
                 mail.sender = adresse
-                mail.save()
+            mail.save()
 
             if match_receiver:
 
