@@ -19,8 +19,8 @@ class Employee(models.Model):
 
 class AdresseMail(models.Model):
     adressemail = models.EmailField()
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    intext = models.BooleanField()
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
+    intext = models.BooleanField(null=True)
 
 
     def __str__(self):
@@ -29,7 +29,7 @@ class AdresseMail(models.Model):
 
 class Mail(models.Model):
     date = models.DateTimeField()
-    subject = models.CharField(max_length=150)
+    subject = models.CharField(max_length=150,null=True)
     content = models.TextField()
     sender = models.ForeignKey(AdresseMail, on_delete=models.CASCADE)
 
