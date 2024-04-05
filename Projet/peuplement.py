@@ -2,17 +2,19 @@ import os
 import re
 from datetime import datetime
 import django
+from django.core.exceptions import ObjectDoesNotExist
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Projet.settings')
 django.setup()
 
 from monappli.models import Employee, Category, AdresseMail, Mail,  Receiver
 
-dossier = r'C:\Users\clara\Documents\GitHub\Projet-BDD\Projet\test'
+#dossier = r'C:\Users\marie\Documents\GitHub\Projet-BDD\Projet\test'
+dossier = r'C:\Users\marie\Desktop\Cours\BDD\projet\maildir\bass-e\calendar'
 
-pattern_receiver = re.compile(r'To:\s+([\w.-]+@[\w.-]+)')
-pattern_receiver2 = re.compile(r'Cc:\s+([\w.-]+@[\w.-]+)')
-pattern_receiver3 = re.compile(r'Bcc:\s+([\w.-]+@[\w.-]+)')
+pattern_receiver = re.compile(r'To:\s+([\w.-]+@[\w.-]+(?:,\s*[\w.-]+@[\w.-]+)*)')
+pattern_receiver2 = re.compile(r'Cc:\s+([\w.-]+@[\w.-]+(?:,\s*[\w.-]+@[\w.-]+)*)')
+pattern_receiver3 = re.compile(r'Bcc:\s+([\w.-]+@[\w.-]+(?:,\s*[\w.-]+@[\w.-]+)*)')
 pattern_Sujet = re.compile(r'^Subject: (.+)$', re.MULTILINE)
 pattern_date = re.compile(r'Date: ([A-Z][a-z]+, \d{1,2} [A-Z][a-z]+ \d{4} \d{2}:\d{2}:\d{2})')
 pattern_sender = re.compile(r'From:\s+([\w.-]+@[\w.-]+)')
@@ -73,7 +75,7 @@ def parcourir_dossier(dossier):
                 adresse = AdresseMail()  
                 ad = match_sender.group(1)  
                 try:
-                    adresse = AdresseMail.objects.get(adressemail=ad)   
+                    adresse = AdresseMail.objects.get(adressemail=ad)
                 except :
                     adresse.adressemail = ad
                     adresse.intext = "@enron" in ad
@@ -83,58 +85,66 @@ def parcourir_dossier(dossier):
             mail.save()
 
             if match_receiver:
-
-                receiver = Receiver()
-                receiver.mail_id = mail
-                receiver.type_r = "To"
-
-                adresse = AdresseMail()
                 ad = match_receiver.group(1)
-                try :
-                    adresse = AdresseMail.objects.get(adressemail=ad) 
-                except:
-                    adresse.adressemail = ad 
-                    adresse.intext = "@enron" in ad
-                    adresse.save()   
-                
-                receiver.receiver = adresse
-                receiver.save()
+                for i in ad.split(","):
+                    i = i.strip()
+                    receiver = Receiver()
+                    receiver.mail_id = mail
+                    receiver.type_r = "To"
+
+                    adresse = AdresseMail()
+                    try :
+                        adresse = AdresseMail.objects.get(adressemail=i)
+                    except ObjectDoesNotExist:
+                        adresse.adressemail = i
+                        adresse.intext = "@enron" in i
+                        adresse.save()
+
+                    receiver.receiver = adresse
+                    receiver.save()
 
             if match_receiver2:
 
-                receiver = Receiver()
-                receiver.mail_id = mail
-                receiver.type_r = "Cc"
 
-                adresse = AdresseMail()
                 ad = match_receiver2.group(1)
-                try :
-                    adresse = AdresseMail.objects.get(adressemail=ad) 
-                except:
-                    adresse.adressemail = ad 
-                    adresse.intext = "@enron" in ad
-                    adresse.save()    
-                
-                receiver.receiver = adresse 
-                receiver.save()          
+                for i in ad.split(","):
+                    i = i.strip()
+                    receiver = Receiver()
+                    receiver.mail_id = mail
+                    receiver.type_r = "Cc"
+
+                    adresse = AdresseMail()
+                    try :
+                        adresse = AdresseMail.objects.get(adressemail=i)
+                    except:
+                        adresse.adressemail = i
+                        adresse.intext = "@enron" in i
+                        adresse.save()
+
+                    receiver.receiver = adresse
+                    receiver.save()
 
             if match_receiver3:
 
-                receiver = Receiver()
-                receiver.mail_id = mail
-                receiver.type_r = "Bcc"
 
-                adresse = AdresseMail()
                 ad = match_receiver3.group(1)
-                try :
-                    adresse = AdresseMail.objects.get(adressemail=ad) 
-                except:
-                    adresse.adressemail = ad 
-                    adresse.intext = "@enron" in ad
-                    adresse.save()    
-                
-                receiver.receiver = adresse 
-                receiver.save()   
+                for i in ad.split(","):
+                    i = i.strip()
+                    receiver = Receiver()
+                    receiver.mail_id = mail
+                    receiver.type_r = "Bcc"
+
+                    adresse = AdresseMail()
+
+                    try :
+                        adresse = AdresseMail.objects.get(adressemail=i)
+                    except:
+                        adresse.adressemail = i
+                        adresse.intext = "@enron" in i
+                        adresse.save()
+
+                    receiver.receiver = adresse
+                    receiver.save()
 
 
 
