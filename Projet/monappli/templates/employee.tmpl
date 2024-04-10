@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Recherche Employé</title>
+</head>
+<body>
+    {% if employee %}
+        <p>Nom : {{ employe.nom }}</p>
+        <p> Prénom {{ employe.prenom }}<p>
+        {% if category %}
+            <p> Categorie : {{ cat.name }}<p>
+    {% else %}
+        <p>Aucun employé trouvé avec ce nom.</p>
+    {% endif %}
+</body>
+</html>
