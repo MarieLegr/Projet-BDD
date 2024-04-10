@@ -10,7 +10,7 @@ django.setup()
 from monappli.models import Employee, Category, AdresseMail, Mail,  Receiver
 
 #dossier = r'C:\Users\marie\Documents\GitHub\Projet-BDD\Projet\test'
-dossier = r'C:\Users\marie\Desktop\Cours\BDD\projet\maildir\bass-e\calendar'
+dossier = r'C:\Users\marie\Desktop\Cours\BDD\projet\maildir'
 
 pattern_receiver = re.compile(r'To:\s+([\w.-]+@[\w.-]+(?:,\s*[\w.-]+@[\w.-]+)*)')
 pattern_receiver2 = re.compile(r'Cc:\s+([\w.-]+@[\w.-]+(?:,\s*[\w.-]+@[\w.-]+)*)')
@@ -35,7 +35,8 @@ def parcourir_dossier(dossier):
             parcourir_dossier(chemin_complet)
         else:
             # Sinon, c'est un fichier
-            with open(chemin_complet, 'r', encoding='utf-8') as fichier:
+            with open(chemin_complet, 'r', encoding='latin1') as fichier:
+                print(f"Traitement du fichier : {chemin_complet}")
                 contenu = fichier.read()
 
             match_receiver = re.search(pattern_receiver, contenu)
