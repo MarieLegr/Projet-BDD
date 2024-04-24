@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Recherche Employé</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> Employé séléctionné </title>
 </head>
 <body>
-    {% if employee %}
-        <p>Nom : {{ employe.nom }}</p>
-        <p> Prénom {{ employe.prenom }}<p>
-        {% if category %}
-            <p> Categorie : {{ cat.name }}<p>
+    <h1>Résultat du Formulaire</h1>
+    <p> id : {{ employe.id }}</p>
+    <p> nom : {{ employe.nom }}</p>
+    <p> prenom : {{ employe.prenom }}</p>
+    {% if category %}
+        <p> categorie : {{ category.name }}</p>
     {% else %}
-        <p>Aucun employé trouvé avec ce nom.</p>
+        <p> categorie : Aucune catégorie</p>
     {% endif %}
 </body>
 </html>
