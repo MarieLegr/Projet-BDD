@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+table.mon_tableau  {
+        border-collapse: collapse;
+    }
+    table.mon_tableau td {
+       border: 2px solid #D1FFA6;
+       padding: 0.3em;
+       font-family: "Sans-serif";
+       font-size: 20px;
+
+    }
+    table.mon_tableau tr:nth-child(even)  {background: #F4FFEB  }
+    table.mon_tableau tr:nth-child(odd) {background: #D1FFA6 }
+
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <a href="http://127.0.0.1:8000/monappli/index" target="_blank">accueil </a>
+    <title>Résultat de la requête</title>
+</head>
+<body>
+    <h1>Résultat de la requête 5</h1>
+
+    <a href="http://127.0.0.1:8000/monappli/requete2" target="_blank">requete 2</a>
+
+    <p>Ma date du début : {{ date_debut }}</p>
+    <p>Ma date de fin : {{ date_fin }}</p>
+    <p> type d'échange : {{ echange }}</p>
+
+    nb de mail échangé:
+    <table class="mon_tableau">
+    <tr>
+    <td BGCOLOR="#D1FFA6"> Jour</td>
+    <td BGCOLOR="#D1FFA6"> Nombre de mails</td>
+    </tr>
+    {% for item in liste %}
+    <tr>
+    <td> {{ item.jour|date:"Y-m-d" }}</td>
+    <td> {{ item.nb_mails }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+
+</body>
+</html>
+
+

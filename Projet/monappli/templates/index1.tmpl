@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Le titre</title>
+    <style>
+      p, div.bouton { background: rgba(240, 240, 240, .5) ; border: solid 1px ; padding: 10px ; width: 40em ; font-style: italic ; }
+div.envoi { text-align: center ;  width: 40em ; }
+div div {  margin-left: 4em ; font-style: normal ; }
+    </style>
+</head>
+<body>
+    <h1>Recherche d'un employé</h1>
+
+    <form action="{% url 'search_employee3' %}" method="post">
+        {% csrf_token %}
+
+        <p>
+            Employé recherché :
+            <select name="employe">
+            {% for employee in employees %}
+                <option value="{{ employee.id }}">{{ employee.nom }} {{employee.prenom}}</option>
+            {% endfor %}
+            </select>
+        </p>
+
+    <div class="envoi"><input type="submit">
+
+    </div>
+</form>
+</body>
+</html>
+

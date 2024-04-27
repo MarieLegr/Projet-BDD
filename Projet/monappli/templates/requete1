@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Le titre</title>
+    <style>
+      p, div.bouton { background: rgba(240, 240, 240, .5) ; border: solid 1px ; padding: 10px ; width: 40em ; font-style: italic ; }
+div.envoi { text-align: center ;  width: 40em ; }
+div div {  margin-left: 4em ; font-style: normal ; }
+    </style>
+</head>
+<body>
+    <h1> attributs d’un employé </h1>
+    <form action="{% url 'attributs_employes' %}" method="post">
+        {% csrf_token %}
+
+        <p>
+            nom de l'employé:
+            <input type="text" name="nom_employe">
+            prénom de l'employé:
+            <input type="text" name="prenom_employe">
+            adresse mail de l'employé:
+            <input type="text" name="adresse_employe">
+        </p>
+
+    <div class="envoi"><input type="submit">
+
+    </div>
+</form>
+</body>
+</html>
+
