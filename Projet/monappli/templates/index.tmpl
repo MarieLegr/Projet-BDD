@@ -1,26 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+    a {
+    color: white; /* Couleur par défaut des liens */
+}
+
+/* Réinitialisation des marges par défaut de la page */
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+        /* Style pour la bandeau de couleur */
+        .bande-couleur {
+            background-color: #272224; /* Couleur de fond */
+            width: 100%; /* Largeur de la bande */
+            height: 50px; /* Hauteur de la bande */
+            padding: 10px; /* Espacement interne pour un peu d'espace autour du contenu */
+            text-align: center; /* Centrage du texte à l'intérieur de la bande */
+            font-size: 24px; /* Taille de police */
+
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            color: white; /* Couleur du texte */
+        }
+
+        /* Style pour le bandeau vertical */
+        .bandeau-vertical1 {
+            background-color: #634E3D; /* Couleur de fond */
+            width: 150px; /* Largeur du bandeau */
+            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
+            position: fixed; /* Position fixe pour rester visible lors du défilement */
+            top: 0; /* Alignement en haut */
+            left: 0; /* Alignement à gauche */
+            text-align: center; /* Centrage du texte */
+            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
+            font-size: 20px; /* Taille de police */
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            /* Couleur du texte */
+            color: white;
+        }
+        /* Style pour le bandeau vertical */
+        .bandeau-vertical2 {
+            background-color: #634E3D; /* Couleur de fond */
+            width: 150px; /* Largeur du bandeau */
+            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
+            position: fixed; /* Position fixe pour rester visible lors du défilement */
+            top: 0; /* Alignement en haut */
+            right: 0; /* Alignement à droite */
+            text-align: center; /* Centrage du texte */
+            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
+            font-size: 20px; /* Taille de police */
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            /* Couleur du texte */
+            color: white;
+        }
+    </style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Résultat de la requête</title>
+    <title>Titre</title>
 </head>
-<body>
-    <h1>Bienvenue</h1>
+<body style="background-color:#F9E6D6;">
 
-    <a href="http://127.0.0.1:8000/monappli/requete1" target="_blank">requete 1</a>
+<!-- Bandeau de couleur -->
+<div class="bande-couleur">
+    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>  |
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a> |
+    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
+</div>
 
-    <a href="http://127.0.0.1:8000/monappli/requete2" target="_blank">requete 2</a>
+<!-- Bandeau vertical -->
+<div class="bandeau-vertical1"></div>
+<div class="bandeau-vertical2"></div>
 
-    <a href="http://127.0.0.1:8000/monappli/requete3" target="_blank">requete 3</a>
+<!-- Contenu de la page -->
+<p text-align: justify; style="margin-left: 160px; margin-right:160px; margin-top: 50px; padding: 20px;">
+Contexte:
+L’affaire Enron (https://fr.wikipedia.org/wiki/Scandale_Enron) est connue comme l’un des plus
+grands cas de manipulation financière aux États-Unis. Parmi les diverses enquêtes judiciaires
+menées, la fouille des contenus des e-mails a constitué une piste essentielle pour comprendre la
+dynamique entre les différents acteurs et leur rôle dans l’affaire.
+</p>
 
-    <a href="http://127.0.0.1:8000/monappli/request4" target="_blank">requete 4</a>
+<p text-align: justify; style="margin-left: 160px; margin-right:160px; margin-top: 50px; padding: 20px;">
+Sujet:
+Il s’agit de développer une application destinée aux enquêteurs (non informaticiens). Elle doit
+leur proposer un jeu de formulaires leur permettant d’explorer, de visualiser et d’analyser les
+données. Un formulaire correspond à une interrogation/visualisation, il doit permettre à l’enquêteur
+de fixer différents paramètres de la requête ainsi que d’éventuelles options pour la visualisation. Il
+est nécessaire ici de se glisser dans la peau d’un enquêteur pour imaginer quelles requêtes sont
+pertinentes, et quelles visualisations sont judicieuses. Toute réalisation allant au-delà du minimum
+requis se traduira par des points de bonus au niveau de la note finale
+ </p>
 
-    <a href="http://127.0.0.1:8000/monappli/requete5" target="_blank">requete 5</a>
 
 
-</a>
+
 </body>
 </html>
-
-

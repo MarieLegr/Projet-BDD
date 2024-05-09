@@ -1,41 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
+<style>
+    a {
+    color: white;
+}
+
+/* Réinitialisation des marges par défaut de la page */
+body, html {
+    margin: 0;
+    padding: 0;
+    /* centrer le texte */
+    text-align: center;
+    font-size: 20px;
+
+}
+
+
+        /* Style pour la bandeau de couleur */
+        .bande-couleur {
+            background-color: #272224; /* Couleur de fond */
+            width: 100%; /* Largeur de la bande */
+            height: 50px; /* Hauteur de la bande */
+            padding: 10px; /* Espacement interne pour un peu d'espace autour du contenu */
+            text-align: center; /* Centrage du texte à l'intérieur de la bande */
+            font-size: 24px; /* Taille de police */
+
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            color: white; /* Couleur du texte */
+        }
+
+        /* Style pour le bandeau vertical */
+        .bandeau-vertical1 {
+            background-color: #634E3D; /* Couleur de fond */
+            width: 150px; /* Largeur du bandeau */
+            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
+            position: fixed; /* Position fixe pour rester visible lors du défilement */
+            top: 0; /* Alignement en haut */
+            left: 0; /* Alignement à gauche */
+            text-align: center; /* Centrage du texte */
+            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
+            font-size: 20px; /* Taille de police */
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            /* Couleur du texte */
+            color: white;
+        }
+        /* Style pour le bandeau vertical */
+        .bandeau-vertical2 {
+            background-color: #634E3D; /* Couleur de fond */
+            width: 150px; /* Largeur du bandeau */
+            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
+            position: fixed; /* Position fixe pour rester visible lors du défilement */
+            top: 0; /* Alignement en haut */
+            right: 0; /* Alignement à droite */
+            text-align: center; /* Centrage du texte */
+            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
+            font-size: 20px; /* Taille de police */
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            /* Couleur du texte */
+            color: white;
+        }
+
+      p { background: rgba(240, 240, 240, .5) ;
+       border: solid 1px ;
+       padding: 15px ;
+       width: 40em ;
+       font-style: italic ;
+       margin-left: 19em ;
+       font-size: 18px;
+
+         }
+
+    div.envoi { text-align: center ;
+
+    }
+
+    h1 { font-size: 35px ;
+    font-weight: bold ;
+    text-decoration: underline;
+    }
+
+
+div.texte { font-size: 20px ;
+    margin-left: 170px ;
+    margin-right: 160px ;
+    text-align: left;
+    }
+
+
 table.mon_tableau  {
         border-collapse: collapse;
+        margin-left: auto;
+        margin-right: auto;
     }
     table.mon_tableau td {
-       border: 2px solid #D1FFA6;
+       border: 2px solid #272224;
        padding: 0.3em;
        font-family: "Sans-serif";
        font-size: 20px;
 
     }
-    table.mon_tableau tr:nth-child(even)  {background: #F4FFEB  }
-    table.mon_tableau tr:nth-child(odd) {background: #D1FFA6 }
+    table.mon_tableau tr:nth-child(even)  {background: #F9E6D6  }
+    table.mon_tableau tr:nth-child(odd) {background: #F9E6D6 }
+
+.histogramme {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 300px;
+            border: 1px solid #000;
+            margin: 20px;
+            padding: 10px;
+        }
+
+        .barre {
+            width: 20px;
+            background-color: blue;
+            margin-right: 5px;
+        }
+
+
+
 
     </style>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <a href="http://127.0.0.1:8000/monappli/index" target="_blank">accueil </a>
-    <title>Résultat de la requête</title>
+<meta charset="utf-8">
+ <title>PgdNBmail</title>
 </head>
-<body>
-    <h1>Résultat de la requête 5</h1>
+<body style="background-color:#F9E6D6;">
 
-    <a href="http://127.0.0.1:8000/monappli/requete2" target="_blank">requete 2</a>
+<!-- Bandeau vertical -->
+<div class="bandeau-vertical1"></div>
+<div class="bandeau-vertical2"></div>
+<!-- Bandeau de couleur -->
+
+<div class="bande-couleur">
+    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>  |
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a> |
+    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
+</div>
+
+    <h1> Nombre de mails échangés entre le {{ date_debut }} et le {{ date_fin }}</h1>
+
+    <br>
+
 
     <p>Ma date du début : {{ date_debut }}</p>
     <p>Ma date de fin : {{ date_fin }}</p>
     <p> type d'échange : {{ echange }}</p>
 
-    nb de mail échangé:
+    <br>
+
+    <h2>Nombre de mail échangé:</h2>
+    <br>
     <table class="mon_tableau">
     <tr>
-    <td BGCOLOR="#D1FFA6"> Jour</td>
-    <td BGCOLOR="#D1FFA6"> Nombre de mails</td>
+    <td BGCOLOR="#634E3D"> Jour</td>
+    <td BGCOLOR="#634E3D"> Nombre de mails</td>
     </tr>
     {% for item in liste %}
     <tr>
@@ -44,6 +172,7 @@ table.mon_tableau  {
     </tr>
     {% endfor %}
     </table>
+
 
 
 </body>

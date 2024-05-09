@@ -22,5 +22,7 @@ urlpatterns = [
     path('List_comu_empl', views.List_comu_empl, name='List_comu_empl'),
     path('requete5', views.requete5, name='requete5'),
     path('PgdNBmail', views.PgdNBmail, name='PgdNBmail'),
+    path('requete6', views.requete6, name='requete6'),
+    path('listemots', views.listemots, name='listemots'),
 
 ]

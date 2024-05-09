@@ -1,18 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Résultat de la requête</title>
+<style>
+    a {
+    color: white;
+}
+
+/* Réinitialisation des marges par défaut de la page */
+body, html {
+    margin: 0;
+    padding: 0;
+    /* centrer le texte */
+    text-align: center;
+    font-size: 20px;
+
+}
+
+
+        /* Style pour la bandeau de couleur */
+        .bande-couleur {
+            background-color: #272224; /* Couleur de fond */
+            width: 100%; /* Largeur de la bande */
+            height: 50px; /* Hauteur de la bande */
+            padding: 10px; /* Espacement interne pour un peu d'espace autour du contenu */
+            text-align: center; /* Centrage du texte à l'intérieur de la bande */
+            font-size: 24px; /* Taille de police */
+
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            color: white; /* Couleur du texte */
+        }
+
+        /* Style pour le bandeau vertical */
+        .bandeau-vertical1 {
+            background-color: #634E3D; /* Couleur de fond */
+            width: 150px; /* Largeur du bandeau */
+            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
+            position: fixed; /* Position fixe pour rester visible lors du défilement */
+            top: 0; /* Alignement en haut */
+            left: 0; /* Alignement à gauche */
+            text-align: center; /* Centrage du texte */
+            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
+            font-size: 20px; /* Taille de police */
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            /* Couleur du texte */
+            color: white;
+        }
+        /* Style pour le bandeau vertical */
+        .bandeau-vertical2 {
+            background-color: #634E3D; /* Couleur de fond */
+            width: 150px; /* Largeur du bandeau */
+            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
+            position: fixed; /* Position fixe pour rester visible lors du défilement */
+            top: 0; /* Alignement en haut */
+            right: 0; /* Alignement à droite */
+            text-align: center; /* Centrage du texte */
+            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
+            font-size: 20px; /* Taille de police */
+            font-weight: bold; /* Gras */
+            font-family: "Sans-serif"; /* Police de caractères */
+            /* Couleur du texte */
+            color: white;
+        }
+
+      p, div.bouton { background: rgba(240, 240, 240, .5) ;
+       border: solid 1px ;
+       padding: 15px ;
+       width: 40em ;
+       font-style: italic ;
+       margin-left: 19em ;
+       font-size: 18px;
+
+         }
+
+    div.envoi { text-align: center ;
+    width: 40em ;
+    margin-left: 40em ;
+    }
+
+    h1 { font-size: 35px ;
+    font-weight: bold ;
+    text-decoration: underline;
+    }
+
+
+div.texte { font-size: 20px ;
+    margin-left: 170px ;
+    margin-right: 160px ;
+    text-align: left;
+    }
+
+
+    </style>
+
+<meta charset="utf-8">
+ <title>Attributs d’un employé</title>
 </head>
-<body>
-    <a href="http://127.0.0.1:8000/monappli/index" target="_blank">accueil </a>
-    <h1>Résultat de la requête</h1>
+<body style="background-color:#F9E6D6;">
+
+<!-- Bandeau vertical -->
+<div class="bandeau-vertical1"></div>
+<div class="bandeau-vertical2"></div>
+
+<div class="bande-couleur">
+    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>  |
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a> |
+    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a> |
+    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
+</div>
+
+    <h1>Employé ayant communiqué avec {{employe_nom }} {{ employe_prenom }}</h1>
     <p>Ma date du début : {{ date_debut }}</p>
     <p>Ma date de fin : {{ date_fin }}</p>
     <p> Mon employé : {{ employe_nom }} {{ employe_prenom }}</p>
     nb de mail envoyé :
+
     <p>Ma liste de couple : {{ liste1 }}</p>
+
+
+
 
     nb de mail reçu :
     <p>Ma liste de couple : {{ liste2 }}</p>

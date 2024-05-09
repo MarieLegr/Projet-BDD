@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de mots</title>
+    <script>
+        function afficherChamps() {
+            var nbMots = parseInt(document.getElementById("nbmot").value);
+            var container = document.getElementById("champsMots");
+            container.innerHTML = ""; // Effacer le contenu actuel
+
+            for (var i = 0; i < nbMots; i++) {
+                var input = document.createElement("input");
+                input.type = "text";
+                input.name = "mot" + (i + 1); // Nom des champs de saisie, ex: mot1, mot2, ...
+                input.placeholder = "Mot " + (i + 1); // Placeholder pour chaque champ de saisie
+                container.appendChild(input); // Ajouter le champ de saisie au conteneur
+                container.appendChild(document.createElement("br")); // Ajouter un saut de ligne
+            }
+        }
+    </script>
+</head>
+<body>
+    <form action="{% url 'listemots' %}" method="post">
+        {% csrf_token %}
+
+        <br>
+
+        <div class="texte">
+            Cette page a été conçue pour trouver les mails contenant une liste de mots déterminés
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <div>
+            Rentrer le nombre de mots que vous voulez rentrer:
+            <input type="number" id="nbmot" name="nbmot" oninput="afficherChamps()">
+        </div>
+
+        <br>
+
+        <div id="champsMots">
+            <!-- Les champs de saisie seront affichés ici -->
+        </div>
+
+    </form>
+</body>
+</html>

@@ -9,6 +9,7 @@ from .forms import SearchForm
 from django.db import connection
 
 
+
 def index(request):
     return render(request, "index.tmpl")
 
@@ -136,43 +137,22 @@ def couples_employes(request):
         seuil = request.POST.get('seuil')
 
         with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT DISTINCT
-    CASE
-        WHEN e.nom <= f.nom THEN e.nom
-        ELSE f.nom
-    END AS nom1,
-
-    CASE
-        WHEN e.prenom <= f.prenom THEN e.prenom
-        ELSE f.prenom
-    END AS prenom1,
-
-    CASE
-        WHEN e.nom <= f.nom THEN f.nom
-        ELSE e.nom
-    END AS nom2,
-
-    CASE
-        WHEN e.prenom <= f.prenom THEN f.prenom
-        ELSE e.prenom
-    END AS prenom2,
-    COUNT(*) AS total_echanges
-FROM
-    monappli_mail m
-    INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
-    INNER JOIN monappli_adressemail a ON m.sender_id = a.id
-    INNER JOIN monappli_adressemail b ON r.receiver_id = b.id
-    INNER JOIN monappli_employee e ON a.employee_id_id = e.id
-    INNER JOIN monappli_employee f ON b.employee_id_id = f.id
-WHERE
-    date BETWEEN %s AND %s
-GROUP BY
-    nom1, prenom1, nom2,  prenom2
-HAVING
-    COUNT(*) > %s
-ORDER BY
-    total_echanges DESC;
+            cursor.execute("""SELECT
+    CASE WHEN e.prenom < f.prenom OR (e.prenom = f.prenom AND e.nom < f.nom) THEN e.prenom ELSE f.prenom END AS prenom_employe1,
+    CASE WHEN e.prenom < f.prenom OR (e.prenom = f.prenom AND e.nom < f.nom) THEN e.nom ELSE f.nom END AS nom_employe1,
+    CASE WHEN e.prenom < f.prenom OR (e.prenom = f.prenom AND e.nom < f.nom) THEN f.prenom ELSE e.prenom END AS prenom_employe2,
+    CASE WHEN e.prenom < f.prenom OR (e.prenom = f.prenom AND e.nom < f.nom) THEN f.nom ELSE e.nom END AS nom_employe2,
+    COUNT(*) AS total_mails_echanges
+FROM monappli_mail m
+INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
+INNER JOIN monappli_adressemail a ON m.sender_id = a.id
+INNER JOIN monappli_adressemail b ON r.receiver_id = b.id
+INNER JOIN monappli_employee e ON a.employee_id_id = e.id
+INNER JOIN monappli_employee f ON b.employee_id_id = f.id
+WHERE date BETWEEN %s AND %s and r.type_r != 'Bcc'
+GROUP BY prenom_employe1, nom_employe1, prenom_employe2, nom_employe2
+HAVING COUNT(*) > %s
+ORDER BY COUNT(*) DESC;
             """, [date_debut, date_fin, seuil])
             rows = cursor.fetchall()
 
@@ -217,7 +197,7 @@ def attributs_employes(request):
                     LEFT JOIN monappli_category c ON e.category_id_id = c.id
                     LEFT JOIN monappli_adressemail am ON e.id = am.employee_id_id
                     WHERE e.nom = %s AND e.prenom = %s;
-                """, [nom_employe, prenom_employe])
+                """, [nom_employe, prenom_employe,])
                 rows = cursor.fetchall()
 
             if rows:
@@ -226,7 +206,8 @@ def attributs_employes(request):
                     nom_employe, prenom_employe, categorie, adresse_employe = row
                     coupleadress.append(adresse_employe)
 
-
+                if not categorie:
+                    categorie = "Aucune catégorie trouvée."
                 context = {
                     'nom_employe': nom_employe,
                     'prenom_employe': prenom_employe,
@@ -256,6 +237,9 @@ def attributs_employes(request):
                     coupleadress.append({
                         'adresse_employe': adresse_employe
                     })
+
+                if not categorie:
+                    categorie = "Aucune catégorie trouvée."
 
 
                 context = {
@@ -327,12 +311,16 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
 
             liste2 = []
             for row in rows2:
-                nom, prenom, nb_mails_envoyes = row
+                nom, prenom, nb_mails_recu = row
                 liste2.append({
                     'nom': nom,
                     'prenom': prenom,
-                    'nb_mails_envoyes': nb_mails_envoyes
+                    'nb_mails_recu': nb_mails_recu
                 })
+
+            #trier par odre decroissant
+            liste2 = sorted(liste2, key=lambda x: x['nb_mails_recu'], reverse=True)
+            liste22 = liste2[:10]
 
 
 
@@ -341,7 +329,8 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                 'liste2': liste2,
                 'date_debut': date_debut,
                 'date_fin': date_fin,
-                'seuil': seuil
+                'seuil': seuil,
+                'liste22': liste22,
             }
             return render(request, 'employeXmail.tmpl', context)
     else:
@@ -517,6 +506,22 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
         return render(request, 'PgdNBmail.tmpl', context)
     else:
         return render(request, 'requete5.tmpl')
+
+
+
+
+def requete6(request):
+    return render(request, 'requete6.tmpl',
+                  {
+
+                  })
+
+def listemots(request):
+    return render(request, 'requete6.tmpl',
+                  {
+
+                  })
+
 
         
         
