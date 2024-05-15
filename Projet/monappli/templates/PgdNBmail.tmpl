@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <style>
-    a {
+       a {
     color: white;
+    text-decoration: none;
+    padding: 10px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
 }
 
 /* Réinitialisation des marges par défaut de la page */
@@ -16,62 +24,77 @@ body, html {
 
 }
 
+/* Style pour les images */
+img {
+    display: block;
+    width: 7%;
+    height: 13%;
+    top : 0px ; left:0px;
+    position: absolute;}
+
+
+
 
         /* Style pour la bandeau de couleur */
         .bande-couleur {
-            background-color: #272224; /* Couleur de fond */
-            width: 100%; /* Largeur de la bande */
-            height: 50px; /* Hauteur de la bande */
-            padding: 10px; /* Espacement interne pour un peu d'espace autour du contenu */
-            text-align: center; /* Centrage du texte à l'intérieur de la bande */
-            font-size: 24px; /* Taille de police */
+            display: block;
+    width: 100%;
+    position: relative;
+    background-size: cover ;
+    background-image: url("https://st.depositphotos.com/1001564/2470/i/450/depositphotos_24704059-stock-photo-background.jpg");
+    padding: 30px 0px;
+        }
+    .bande-couleur img {
+    display: block;
+    width: 7%;
+    height: 13%;
+    top : 0px ; left:0px;
+    position: absolute;}
 
-            font-weight: bold; /* Gras */
-            font-family: "Sans-serif"; /* Police de caractères */
+
+     .bande-bas {
+
+    margin: 0;
+
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+
+            align-items: center;
+            padding: 30px 0px; /* Ajustez le rembourrage si nécessaire */
+            background-size: cover;
+            background-image: url("https://st.depositphotos.com/1001564/2470/i/450/depositphotos_24704059-stock-photo-background.jpg");
             color: white; /* Couleur du texte */
+            font-family: Arial, sans-serif; /* Police du texte */
         }
 
-        /* Style pour le bandeau vertical */
-        .bandeau-vertical1 {
-            background-color: #634E3D; /* Couleur de fond */
-            width: 150px; /* Largeur du bandeau */
-            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
-            position: fixed; /* Position fixe pour rester visible lors du défilement */
-            top: 0; /* Alignement en haut */
-            left: 0; /* Alignement à gauche */
-            text-align: center; /* Centrage du texte */
-            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
-            font-size: 20px; /* Taille de police */
-            font-weight: bold; /* Gras */
-            font-family: "Sans-serif"; /* Police de caractères */
-            /* Couleur du texte */
-            color: white;
-        }
-        /* Style pour le bandeau vertical */
-        .bandeau-vertical2 {
-            background-color: #634E3D; /* Couleur de fond */
-            width: 150px; /* Largeur du bandeau */
-            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
-            position: fixed; /* Position fixe pour rester visible lors du défilement */
-            top: 0; /* Alignement en haut */
-            right: 0; /* Alignement à droite */
-            text-align: center; /* Centrage du texte */
-            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
-            font-size: 20px; /* Taille de police */
-            font-weight: bold; /* Gras */
-            font-family: "Sans-serif"; /* Police de caractères */
-            /* Couleur du texte */
-            color: white;
+        .bande-bas-texte {
+    flex-grow: 1; /* Permet au texte de remplir l'espace disponible */
+}
+
+        /* Style pour l'image en bas à droite */
+        .bande-bas img {
+                width: 5%; /* Ajustez la largeur de l'image si nécessaire */
+    height: auto; /* Ajustez la hauteur de l'image si nécessaire */
+    margin-left: auto; /* Pousse l'image vers la droite */
         }
 
-      p { background: rgba(240, 240, 240, .5) ;
-       border: solid 1px ;
+
+
+
+      p {
        padding: 15px ;
        width: 40em ;
        font-style: italic ;
+       /* texte en gras */
+         font-weight: bold ;
        margin-left: 19em ;
        font-size: 18px;
-
+       background-image: url("https://img1.wallspic.com/crops/3/4/1/7/5/157143/157143-motif_vert_bleu-bleu_vert-green-la_purete_de_la_couleur-de_teintes_et_de_nuances-1920x1080.jpg");
+       background-size: cover; /* Pour ajuster la taille de l'image de fond */
+       background-position: center;
+       border-radius: 10px;
+       color: White;
          }
 
     div.envoi { text-align: center ;
@@ -84,69 +107,33 @@ body, html {
     }
 
 
-div.texte { font-size: 20px ;
+div.texte { font-size: 22px ;
     margin-left: 170px ;
     margin-right: 160px ;
     text-align: left;
     }
 
 
-table.mon_tableau  {
-        border-collapse: collapse;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    table.mon_tableau td {
-       border: 2px solid #272224;
-       padding: 0.3em;
-       font-family: "Sans-serif";
-       font-size: 20px;
-
-    }
-    table.mon_tableau tr:nth-child(even)  {background: #F9E6D6  }
-    table.mon_tableau tr:nth-child(odd) {background: #F9E6D6 }
-
-.histogramme {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            height: 300px;
-            border: 1px solid #000;
-            margin: 20px;
-            padding: 10px;
-        }
-
-        .barre {
-            width: 20px;
-            background-color: blue;
-            margin-right: 5px;
-        }
-
-
-
-
     </style>
 
 <meta charset="utf-8">
- <title>PgdNBmail</title>
+ <title>plus grand nombre de mails</title>
 </head>
-<body style="background-color:#F9E6D6;">
+<body style="background-color:white;">
 
-<!-- Bandeau vertical -->
-<div class="bandeau-vertical1"></div>
-<div class="bandeau-vertical2"></div>
-<!-- Bandeau de couleur -->
 
 <div class="bande-couleur">
-    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>  |
-    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a> |
-    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a> |
-    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a> |
-    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a> |
-    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a> |
+    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
+    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a>
+    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a>
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
     <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
 </div>
 
+<img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
+    <br>
     <h1> Nombre de mails échangés entre le {{ date_debut }} et le {{ date_fin }}</h1>
 
     <br>
@@ -154,24 +141,57 @@ table.mon_tableau  {
 
     <p>Ma date du début : {{ date_debut }}</p>
     <p>Ma date de fin : {{ date_fin }}</p>
-    <p> type d'échange : {{ echange }}</p>
+    <p> Type d'échange : {{ echange }}</p>
 
     <br>
 
-    <h2>Nombre de mail échangé:</h2>
     <br>
-    <table class="mon_tableau">
-    <tr>
-    <td BGCOLOR="#634E3D"> Jour</td>
-    <td BGCOLOR="#634E3D"> Nombre de mails</td>
-    </tr>
+<div class="texte">
+L'histogramme ci-dessous montre les 5 jours où le plus grand nombre de mails ont été échangés entre le {{ date_debut }} et le {{ date_fin }}, uniquement pour les échanges {{ echange }}.
+</div>
+
+    <div class="col-md-6" style="margin-left: 15%;">
+        {{disp|safe}}
+    </div>
+
+
+<hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
+
+<br>
+<div class="texte">
+Le tableau ci-dessous présente le nombre de mails échangés chaque jour entre le {{ date_debut }} et le {{ date_fin }}.
+</div>
+
+<br>
+
+
+
+<table border="1", style="margin: 0 auto;">
+    <thead>
+        <tr>
+            <th>Jour</th>
+            <th>Nombre de mails</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for item in liste %}
     <tr>
     <td> {{ item.jour|date:"Y-m-d" }}</td>
     <td> {{ item.nb_mails }}</td>
     </tr>
-    {% endfor %}
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+   <br>
+    <br>
+<div class="bande-bas">
+    <!-- Texte dans la bande de couleur en bas -->
+    <div class="bande-bas-texte">© 2024 Université d'Angers</div>
+    <!-- Image en bas à droite -->
+    <img src="https://www.univ-angers.fr/_resource/Documents/DCOM/logo/VERTICAL/PAPIER/PNG/ua_v_couleur.png?download=true" alt="Logo UA">
+</div>
 
 
 

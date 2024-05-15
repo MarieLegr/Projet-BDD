@@ -5,8 +5,12 @@ from .models import Category
 from .models import Mail
 from .models import AdresseMail
 from .models import Receiver
-from .forms import SearchForm
 from django.db import connection
+import pandas as pd
+import plotly
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 
 
@@ -19,102 +23,6 @@ def index1(request):
     #category=Category.objects.all()
     context={"employees":employees}
     return render(request,"index1.tmpl",context=context)
-
-def vue2(request):
-    return HttpResponse("<p>Cette vue est une page d'aide basique pour l'application de mon projet.</p>") #<p> est un paragraphe en HTML
-
-def vue3(request):
-    response = HttpResponse() #Création d'une réponse HTTP
-    response.write("<h1>Employee</h1>") #<h1> est un titre en HTML
-    for cl in Employee.objects.all(): #Récupère tous les clients
-        response.write(f"{cl}<br/>") #<br/> est un saut de ligne en HTML
-    return response #Renvoie la réponse HTTP
-
-
-def search_employee2(request):
-    if request.method == 'POST':
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            nom_employe = form.cleaned_data['nom_employe']
-            employee = Employee.objects.filter(nom=nom_employe).first()
-
-            category = Category.objects.filter(id=employee.category_id).first()
-            context = {"employee": employee, "category": category}
-            return render(request, "employee.tmpl", context=context)
-    else:
-        form = SearchForm()
-    return render(request, 'index1.tmpl', {'form': form})
-
-
-def search_employee(request):
-    if request.method == 'POST':
-        id=request.POST.get('employe')
-        employe=Employee.objects.get(id=id)
-        if employe.category_id_id is None:
-            category=None
-        else :
-            category=Category.objects.get(id=employe.category_id_id)
-        return render(request, 'employee.tmpl', {'employe': employe, 'category': category})
-    else:
-        return render(request,'index1.tmpl')
-
-
-def vue4(request):
-    employee = Employee.objects.all()
-    category = Category.objects.all()
-    context = {"employee": employee, "category": category}
-    return render(request, "index1.tmpl", context=context)
-
-
-def vue5(request):
-    if request.method == 'POST':
-        employe = request.POST.get('employe')
-
-        return render(request, 'employee.tmpl', {'employe': employe})
-    else:
-        return render(request, 'index1.tmpl')
-
-
-#requête sql
-
-#test d'une vue qui affiche les employés qui ont une catégorie avec une requête sql
-def vue6(request):
-    employees = Employee.objects.raw('SELECT * FROM monappli_employee where category_id_id is not null')
-    context = {"employees": employees}
-    return render(request, "index1.tmpl", context=context)
-
-
-#même chose que search_employee mais avec une requête sql
-def search_employee3(request):
-    if request.method == 'POST': # Si le formulaire est soumis
-        employe_id = request.POST.get('employe') # Récupérer l'ID de l'employé
-
-        with connection.cursor() as cursor: # Utiliser un curseur pour exécuter une requête SQL
-            cursor.execute("""
-                SELECT e.nom, e.prenom, e.category_id_id
-                FROM monappli_employee e
-                WHERE e.id = %s
-            """, [employe_id]) # Exécuter la requête SQL avec l'ID de l'employé en paramètre
-            row = cursor.fetchone() # Récupérer la première ligne du résultat, ici il y a seulement un employé
-
-        if row: # Si une ligne a été trouvée
-            nom, prenom, category_id = row # Récupérer les valeurs de la ligne
-            # Récupérer le nom de la catégorie
-            if category_id: # Si l'employé a une catégorie
-                category = Category.objects.get(id=category_id)
-                categorie_nom = category.name
-            else:
-                categorie_nom = "Aucune catégorie"
-
-            context = {
-                'nom': nom,
-                'prenom': prenom,
-                'categorie': categorie_nom,
-            }
-            return render(request, 'employee_details.tmpl', context)
-
-    else:
-        return render(request, 'index1.tmpl')
 
 
 #couples d’employés ayant communiqué dans un intervalle de temps choisi (liste
@@ -290,6 +198,15 @@ inner join
                     'nb_mails_envoyes': nb_mails_envoyes
                 })
 
+            liste1 = sorted(liste1, key=lambda x: x['nb_mails_envoyes'], reverse=True)
+            liste11 = liste1[:10]
+
+            DF = pd.DataFrame(liste11)
+            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'))])
+            fig.update_layout(title=f'Top 10 des employés ayant envoyé plus de {seuil} mails', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails envoyés', width=600, height=400)
+            disp1 = plotly.offline.plot(fig, output_type='div')
+
 
         with connection.cursor() as cursor:
             cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
@@ -318,19 +235,104 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                     'nb_mails_recu': nb_mails_recu
                 })
 
-            #trier par odre decroissant
+                # trier par odre decroissant
             liste2 = sorted(liste2, key=lambda x: x['nb_mails_recu'], reverse=True)
             liste22 = liste2[:10]
 
+            DF=pd.DataFrame(liste22)
+            fig=go.Figure(data=[go.Bar(x=DF['nom'],y=DF['nb_mails_recu'],marker=dict(color='rgb(47, 118, 128)'))])
+            fig.update_layout(title=f'Top 10 des employés ayant reçu plus de {seuil} mails',xaxis_title='Employés',yaxis_title='Nombre de mails reçus',width=600, height=400)
+            disp2=plotly.offline.plot(fig,output_type='div')
+
+
+
+
+
+        with connection.cursor() as cursor:
+            cursor.execute("""select e.nom, e.prenom,nb_mails_envoyes from monappli_employee e
+inner join (select monappli_adressemail.employee_id_id, nb_mails_envoyes from monappli_adressemail
+inner join
+    (select sender_id, count(*) as nb_mails_envoyes
+    from monappli_mail
+    where date between %s and %s
+    group by sender_id
+    having count(*) < %s) as envoyes on envoyes.sender_id = monappli_adressemail.id
+    where monappli_adressemail.employee_id_id is not null) as envoie2 on e.id = envoie2.employee_id_id;""", [date_debut, date_fin, seuil])
+            rows3 = cursor.fetchall()
+
+            liste3=[]
+            for row in rows3:
+                nom, prenom, nb_mails_envoyes = row
+                liste3.append({
+                    'nom': nom,
+                    'prenom': prenom,
+                    'nb_mails_envoyes': nb_mails_envoyes
+                })
+            liste3 = sorted(liste3, key=lambda x: x['nb_mails_envoyes'], reverse=True)
+            liste33 = liste3[:10]
+
+            DF = pd.DataFrame(liste33)
+            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'))])
+            fig.update_layout(title=f'Top 10 des employés ayant envoyé moins de {seuil} mails', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails envoyés', width=600, height=400)
+            disp3 = plotly.offline.plot(fig, output_type='div')
+
+        with connection.cursor() as cursor:
+            cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
+FROM (
+    SELECT e.nom, e.prenom, a.id
+    FROM monappli_employee e
+    INNER JOIN monappli_adressemail a ON e.id = a.employee_id_id
+) AS t
+INNER JOIN (
+    SELECT r.receiver_id, COUNT(*) AS nb_mails_recus
+    FROM monappli_receiver r
+    INNER JOIN monappli_mail m ON r.mail_id_id = m.id
+    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc'
+    GROUP BY r.receiver_id
+    HAVING COUNT(*) < %s
+) AS recus ON recus.receiver_id = t.id
+GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
+            rows4 = cursor.fetchall()
+
+            liste4 = []
+            for row in rows4:
+                nom, prenom, nb_mails_recu = row
+                liste4.append({
+                    'nom': nom,
+                    'prenom': prenom,
+                    'nb_mails_recu': nb_mails_recu
+                })
+
+            liste4 = sorted(liste2, key=lambda x: x['nb_mails_recu'], reverse=True)
+            liste44 = liste4[:10]
+
+            DF = pd.DataFrame(liste44)
+            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails_recu'],marker=dict(color='rgb(47, 118, 128)'))])
+            fig.update_layout(title=f'Top 10 des employés ayant reçu moins de {seuil} mails', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails reçus', width=600, height=400)
+            disp4 = plotly.offline.plot(fig, output_type='div')
 
 
             context = {
+                'liste3': liste3,
+                'liste4': liste4,
                 'liste1': liste1,
                 'liste2': liste2,
                 'date_debut': date_debut,
                 'date_fin': date_fin,
                 'seuil': seuil,
                 'liste22': liste22,
+                'disp1': disp1,
+                'liste33': liste33,
+                'disp2': disp2,
+                'liste44': liste44,
+                'disp4': disp4,
+                'liste11': liste11,
+                'disp3': disp3
+
+
+
             }
             return render(request, 'employeXmail.tmpl', context)
     else:
@@ -340,7 +342,6 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
 
 def requete3(request):
     employees = Employee.objects.all()
-    # category=Category.objects.all()
     context = {"employees": employees}
     return render(request, "requete3.tmpl", context=context)
 
@@ -402,13 +403,51 @@ GROUP BY e_receiver.nom ,e_receiver.prenom;""", [employe_nom, employe_prenom, da
                     'nb_mails': nb_mails
                 })
 
+            from collections import defaultdict
+
+            # Convertir liste1 et liste2 en dictionnaires où les clés sont les noms et prénoms
+            dict_liste1 = {(employe['nom'], employe['prenom']): employe['nb_mails'] for employe in liste1}
+            dict_liste2 = {(employe['nom'], employe['prenom']): employe['nb_mails'] for employe in liste2}
+
+            # Initialiser un dictionnaire pour stocker les résultats
+            dict_resultat = defaultdict(int)
+
+            # Ajouter les valeurs de liste1 à dict_resultat
+            for nom_prenom, nb_mails in dict_liste1.items():
+                dict_resultat[nom_prenom] += nb_mails
+
+            # Ajouter les valeurs de liste2 à dict_resultat
+            for nom_prenom, nb_mails in dict_liste2.items():
+                dict_resultat[nom_prenom] += nb_mails
+
+            # Convertir le résultat en une liste de dictionnaires
+            liste3 = [{'nom': nom, 'prenom': prenom, 'nb_mails': nb_mails} for (nom, prenom), nb_mails in
+                      dict_resultat.items()]
+            liste3 = sorted(liste3, key=lambda x: x['nb_mails'], reverse=True)
+
+            liste33 = liste3[:10]
+
+            DF = pd.DataFrame(liste33)
+            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'), name=f'Employés ayant communiqué avec {employe_nom} {employe_prenom} entre le {date_debut} et le {date_fin}')])
+            fig.update_layout(title=f'Top 10 des employés', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails', width=1000, height=400,
+                                legend=dict(
+                                    x=1.0,
+                                    y=1.0,
+                                    bgcolor='rgba(255, 255, 255, 0)',
+                                    bordercolor='rgba(255, 255, 255, 0)'
+                                ), showlegend=True)
+            disp = plotly.offline.plot(fig, output_type='div')
+
         context = {
             'liste1': liste1,
             'liste2': liste2,
             'employe_nom': employe_nom,
             'employe_prenom': employe_prenom,
             'date_debut': date_debut,
-            'date_fin': date_fin
+            'date_fin': date_fin,
+            'liste3': liste3,
+            'disp': disp,
         }
         return render(request, 'List_comu_empl.tmpl', context)
     else:
@@ -437,7 +476,7 @@ FROM monappli_mail m
 INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
 inner join monappli_adressemail a on m.sender_id = a.id
 inner join monappli_adressemail b on r.receiver_id = b.id
-WHERE m.date BETWEEN '2000-12-13' AND '2001-01-01' and a.intext = true and b.intext = true and r.type_r != 'Bcc'
+WHERE m.date BETWEEN %s AND %s and a.intext = true and b.intext = true and r.type_r != 'Bcc'
 GROUP BY jour
 ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                 rows = cursor.fetchall()
@@ -449,8 +488,24 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                         'jour': jour,
                         'nb_mails': nb_mails
                     })
+                liste = sorted(liste, key=lambda x: x['nb_mails'], reverse=True)
+                liste1 = liste[:5]
 
-        elif echange == 'IE':
+                DF = pd.DataFrame(liste1)
+                fig = go.Figure(data=[go.Bar(x=DF['jour'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'), name=f'Nombre de mails échangés {echange}')])
+                fig.update_layout(
+                    title=f'Nombre de mails échangés entre employés internes entre le {date_debut} et le {date_fin}',
+                    xaxis_title='Jour', yaxis_title='Nombre de mails échangés', width=1000, height=400,
+                    legend=dict(
+                        x=1.0,
+                        y=1.0,
+                        bgcolor='rgba(255, 255, 255, 0)',
+                        bordercolor='rgba(255, 255, 255, 0)'
+                    ), showlegend=True)
+                disp = plotly.offline.plot(fig, output_type='div')
+
+
+        elif echange == 'Interne/Externe':
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT
     DATE_TRUNC('day', m.date) AS jour,
@@ -459,7 +514,7 @@ FROM monappli_mail m
 INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
 inner join monappli_adressemail a on m.sender_id = a.id
 inner join monappli_adressemail b on r.receiver_id = b.id
-WHERE m.date BETWEEN '2000-12-13' AND '2001-01-01' and ((a.intext = false and b.intext = true) or (a.intext = true and b.intext = false)) and r.type_r != 'Bcc'
+WHERE m.date BETWEEN %s AND %s and ((a.intext = false and b.intext = true) or (a.intext = true and b.intext = false)) and r.type_r != 'Bcc'
 GROUP BY jour
 ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                 rows = cursor.fetchall()
@@ -471,6 +526,18 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                         'jour': jour,
                         'nb_mails': nb_mails
                     })
+                liste = sorted(liste, key=lambda x: x['nb_mails'], reverse=True)
+                liste1 = liste[:10]
+
+                DF= pd.DataFrame(liste1)
+                fig=go.Figure(data=[go.Bar(x=DF['jour'],y=DF['nb_mails'],marker=dict(color='rgb(242, 65, 65)'),name=f'Nombre de mails échangés {echange}')])
+                fig.update_layout(title=f'Nombre de mails échangés entre employés internes et externes entre le {date_debut} et le {date_fin}',xaxis_title='Jour',yaxis_title='Nombre de mails échangés',width=1000, height=400,legend=dict(
+                        x=1.0,
+                        y=1.0,
+                        bgcolor='rgba(255, 255, 255, 0)',
+                        bordercolor='rgba(255, 255, 255, 0)'
+                    ), showlegend=True)
+                disp=plotly.offline.plot(fig,output_type='div')
 
         else :
             with connection.cursor() as cursor:
@@ -481,7 +548,7 @@ FROM monappli_mail m
 INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
 inner join monappli_adressemail a on m.sender_id = a.id
 inner join monappli_adressemail b on r.receiver_id = b.id
-WHERE m.date BETWEEN '2000-12-13' AND '2001-01-01' and ((a.intext = false and b.intext = true) or (a.intext = true and b.intext = false) or (a.intext = true and b.intext = true )) and r.type_r != 'Bcc'
+WHERE m.date BETWEEN %s AND %s and ((a.intext = false and b.intext = true) or (a.intext = true and b.intext = false) or (a.intext = true and b.intext = true )) and r.type_r != 'Bcc'
 GROUP BY jour
 ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
 
@@ -495,12 +562,51 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                         'jour': jour,
                         'nb_mails': nb_mails
                     })
+                liste = sorted(liste, key=lambda x: x['nb_mails'], reverse=True)
+                liste1 = liste[:10]
+
+
+
+                DF = pd.DataFrame(liste1)
+                fig = go.Figure(data=[go.Bar(x=DF['jour'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'),name=f'Nombre de mails échangés {echange}')])
+                fig.update_layout(
+                    title=f'Nombre de mails échangés entre employés internes/externes et interne/interne entre le {date_debut} et le {date_fin}',
+                    xaxis_title='Jour', yaxis_title='Nombre de mails échangés', width=1000, height=400,legend=dict(
+                        x=1.0,
+                        y=1.0,
+                        bgcolor='rgba(255, 255, 255, 0)',
+                        bordercolor='rgba(255, 255, 255, 0)'
+                    ), showlegend=True)
+                disp = plotly.offline.plot(fig, output_type='div')
+
+                with connection.cursor() as cursor:
+                    cursor.execute("""SELECT
+                DATE_TRUNC('day', m.date) AS jour,
+                COUNT(*) AS nombre_de_mails
+            FROM monappli_mail m
+            INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
+            inner join monappli_adressemail a on m.sender_id = a.id
+            inner join monappli_adressemail b on r.receiver_id = b.id
+            WHERE m.date BETWEEN %s AND %s and a.intext = true and b.intext = true and r.type_r != 'Bcc'
+            GROUP BY jour
+            ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
+                    rows = cursor.fetchall()
+
+                    liste2 = []
+                    for row in rows:
+                        jour, nb_mails = row
+                        liste.append({
+                            'jour': jour,
+                            'nb_mails': nb_mails
+                        })
+
 
         context = {
             'liste': liste,
             'date_debut': date_debut,
             'date_fin': date_fin,
-            'echange': echange
+            'echange': echange,
+            'disp': disp
         }
 
         return render(request, 'PgdNBmail.tmpl', context)
@@ -516,15 +622,87 @@ def requete6(request):
 
                   })
 
-def listemots(request):
-    return render(request, 'requete6.tmpl',
-                  {
+from django.db import connection
 
-                  })
+def Liste_mots(request):
+    if request.method == 'POST':
+        Type = request.POST.get('choix')
+        nb_mots = int(request.POST.get('nbmot', 0))  # Récupérer le nombre de mots
+        liste_mots = []  # Initialiser une liste pour stocker les mots entrés par l'utilisateur
+
+        # Parcourir les données du formulaire pour récupérer les mots saisis par l'utilisateur
+        for i in range(1, nb_mots + 1):
+            mot = request.POST.get(f'mot{i}', '')  # Récupérer le mot avec la clé dynamique mot{i}
+            if mot:  # Vérifier si le champ n'est pas vide
+                liste_mots.append(mot)  # Ajouter le mot à la liste
+
+        conditions = ' AND '.join([f"m.content LIKE '%{mot}%'" for mot in liste_mots])
+
+        # Générer une liste de paramètres pour la requête SQL en fonction des mots saisis par l'utilisateur
+
+        if Type == 'expediteur':
+
+        # Construire la requête SQL avec des paramètres dynamique
+
+            # Exécuter la requête SQL avec les paramètres dynamiques
+            with connection.cursor() as cursor:
+                cursor.execute(f"""
+                SELECT m.content, e.prenom, e.nom, m.subject, m.id
+                FROM monappli_mail m 
+                INNER JOIN monappli_adressemail a ON m.sender_id = a.id 
+                INNER JOIN monappli_employee e ON a.employee_id_id = e.id 
+                WHERE {conditions};
+            """)
+                rows = cursor.fetchall()
+
+            resultats = []
+            for row in rows:
+                content, prenom, nom,subject, id = row
+                resultats.append({
+                    'content': content,
+                    'prenom': prenom,
+                    'nom': nom,
+                    'subject': subject,
+                    'id': id
+                })
+
+        else:
+
+            # Exécuter la requête SQL avec les paramètres dynamiques
+            with connection.cursor() as cursor:
+                cursor.execute(f"""select m.content, e.prenom, e.nom, m.subject, m.id from monappli_mail m
+inner join monappli_receiver r on m.id = r.mail_id_id
+inner join monappli_adressemail a on r.receiver_id = a.id
+inner join monappli_employee e on a.employee_id_id = e.id
+where {conditions};""")
+                rows = cursor.fetchall()
+
+            resultats = []
+            for row in rows:
+                content, prenom, nom, subject, id = row
+                resultats.append({
+                    'content': content,
+                    'prenom': prenom,
+                    'nom': nom,
+                    'subject': subject,
+                    'id': id
+                })
 
 
-        
-        
-    
 
+        context = {
+            'resultats': resultats,
+            'Type': Type,
+            'liste_mots': liste_mots
+
+        }
+
+        return render(request, 'Liste_mots.tmpl', context)
+
+from django.shortcuts import render, get_object_or_404
+def detail_mail(request, mail_id):
+    mail = get_object_or_404(Mail, pk=mail_id)
+    adressemail = AdresseMail.objects.filter(id=mail.sender_id).first()
+    sender = Employee.objects.filter(id=adressemail.employee_id_id).first()
+    return render(request, 'detail_mail.tmpl', {'mail': mail, 'sender': sender})
 

@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <style>
-    a {
+       a {
     color: white;
+    text-decoration: none;
+    padding: 10px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
 }
 
 /* Réinitialisation des marges par défaut de la page */
@@ -16,61 +24,78 @@ body, html {
 
 }
 
+/* Style pour les images */
+img {
+    display: block;
+    width: 7%;
+    height: 13%;
+    top : 0px ; left:0px;
+    position: absolute;}
+
+
+
 
         /* Style pour la bandeau de couleur */
         .bande-couleur {
-            background-color: #272224; /* Couleur de fond */
-            width: 100%; /* Largeur de la bande */
-            height: 50px; /* Hauteur de la bande */
-            padding: 10px; /* Espacement interne pour un peu d'espace autour du contenu */
-            text-align: center; /* Centrage du texte à l'intérieur de la bande */
-            font-size: 24px; /* Taille de police */
+            display: block;
+    width: 100%;
+    position: relative;
+    background-size: cover ;
+    background-image: url("https://st.depositphotos.com/1001564/2470/i/450/depositphotos_24704059-stock-photo-background.jpg");
+    padding: 30px 0px;
+        }
+    .bande-couleur img {
+    display: block;
+    width: 7%;
+    height: 13%;
+    top : 0px ; left:0px;
+    position: absolute;}
 
-            font-weight: bold; /* Gras */
-            font-family: "Sans-serif"; /* Police de caractères */
+
+     .bande-bas {
+
+    margin: 0;
+
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+
+            align-items: center;
+            padding: 30px 0px; /* Ajustez le rembourrage si nécessaire */
+            background-size: cover;
+            background-image: url("https://st.depositphotos.com/1001564/2470/i/450/depositphotos_24704059-stock-photo-background.jpg");
             color: white; /* Couleur du texte */
+            font-family: Arial, sans-serif; /* Police du texte */
         }
 
-        /* Style pour le bandeau vertical */
-        .bandeau-vertical1 {
-            background-color: #634E3D; /* Couleur de fond */
-            width: 150px; /* Largeur du bandeau */
-            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
-            position: fixed; /* Position fixe pour rester visible lors du défilement */
-            top: 0; /* Alignement en haut */
-            left: 0; /* Alignement à gauche */
-            text-align: center; /* Centrage du texte */
-            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
-            font-size: 20px; /* Taille de police */
-            font-weight: bold; /* Gras */
-            font-family: "Sans-serif"; /* Police de caractères */
-            /* Couleur du texte */
-            color: white;
+        .bande-bas-texte {
+    flex-grow: 1; /* Permet au texte de remplir l'espace disponible */
+}
+
+        /* Style pour l'image en bas à droite */
+        .bande-bas img {
+                width: 5%; /* Ajustez la largeur de l'image si nécessaire */
+    height: auto; /* Ajustez la hauteur de l'image si nécessaire */
+    margin-left: auto; /* Pousse l'image vers la droite */
         }
-        /* Style pour le bandeau vertical */
-        .bandeau-vertical2 {
-            background-color: #634E3D; /* Couleur de fond */
-            width: 150px; /* Largeur du bandeau */
-            height: 100%; /* Hauteur égale à la hauteur de la fenêtre */
-            position: fixed; /* Position fixe pour rester visible lors du défilement */
-            top: 0; /* Alignement en haut */
-            right: 0; /* Alignement à droite */
-            text-align: center; /* Centrage du texte */
-            padding-top: 20px; /* Espacement interne pour un peu d'espace autour du texte */
-            font-size: 20px; /* Taille de police */
-            font-weight: bold; /* Gras */
-            font-family: "Sans-serif"; /* Police de caractères */
-            /* Couleur du texte */
-            color: white;
-        }
+
+
+
 
       p { background: rgba(240, 240, 240, .5) ;
-       border: solid 1px ;
        padding: 15px ;
        width: 40em ;
        font-style: italic ;
+       /* texte en gras */
+         font-weight: bold ;
        margin-left: 19em ;
        font-size: 18px;
+       background-image: url("https://img1.wallspic.com/crops/3/4/1/7/5/157143/157143-motif_vert_bleu-bleu_vert-green-la_purete_de_la_couleur-de_teintes_et_de_nuances-1920x1080.jpg");
+       background-size: cover; /* Pour ajuster la taille de l'image de fond */
+       background-position: center;
+       border-radius: 10px;
+       color: White;
+
 
          }
 
@@ -80,11 +105,10 @@ body, html {
 
     h1 { font-size: 35px ;
     font-weight: bold ;
-    text-decoration: underline;
     }
 
 
-div.texte { font-size: 20px ;
+div.texte { font-size: 22px ;
     margin-left: 170px ;
     margin-right: 160px ;
     text-align: left;
@@ -96,56 +120,74 @@ div.texte { font-size: 20px ;
 <meta charset="utf-8">
  <title>Attributs d’un employé</title>
 </head>
-<body style="background-color:#F9E6D6;">
+<body style="background-color:white;">
 
-<!-- Bandeau vertical -->
-<div class="bandeau-vertical1"></div>
-<div class="bandeau-vertical2"></div>
-<!-- Bandeau de couleur -->
 
 <div class="bande-couleur">
-    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>  |
-    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a> |
-    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a> |
-    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a> |
-    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a> |
-    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a> |
+    <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
+    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a>
+    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a>
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
     <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
 </div>
 
+<img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
+    <br>
+
+
+
     <h1> Le plus grand nombre d'échange de mail dans un période </h1>
+    <br>
 
     <form action="{% url 'PgdNBmail' %}" method="post">
         {% csrf_token %}
 
 <div class="texte"> Cette Page à pour objectif de vous permettre de trouver le plus grand nombre d'échange de mail dans une période donnée.
  Pour cela, veuillez renseigner les informations suivantes : </div>
-
+<br>
+<br>
 <div> Rentrer le type d'échange que vous souhaitez : </div>
+<br>
         <p>
-            type d'échange :
+            Type d'échange :
             <select name="IntExt">
-                <option value="">--Please choose an option--</option>
+                <option value="">--Veuillez choisir un type d'échange--</option>
                 <option value="Interne/Interne">Interne et Interne</option>
-                <option value="IE">Interne et Externe</option>
-                <option value="IIIE"> Les deux </option>
+                <option value="Interne/Externe">Interne et Externe</option>
+                <option value="Interne/Interne et Interne/Externe"> Les deux </option>
             </select>
         </p>
-
-<div> Rentrer la période que vous souhaitez : </div>
+<br>
+<br>
+<div> Indiquer la période de recherche : </div>
+<br>
         <p>
 
-            date de début:
-            <input type="date" name="date_debut">
-            date de fin:
+
+            Date de début:
+            <input type="date" name="date_debut" style="margin-right: 30px;">
+
+            Date de fin:
             <input type="date" name="date_fin">
 
-
         </p>
-
-    <div class="envoi"><input type="submit">
+<br>
+    <div class="envoi"><input type="submit" value="Rechercher"></div>
 
     </div>
+
+     <br>
+    <br>
+<div class="bande-bas">
+    <!-- Texte dans la bande de couleur en bas -->
+    <div class="bande-bas-texte">© 2024 Université d'Angers</div>
+    <!-- Image en bas à droite -->
+    <img src="https://www.univ-angers.fr/_resource/Documents/DCOM/logo/VERTICAL/PAPIER/PNG/ua_v_couleur.png?download=true" alt="Logo UA">
+</div>
+
+
 </form>
 </body>
 </html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail du Mail</title>
+</head>
+<body>
+<br>
+ <div>Sujet : {{ mail.subject }}</div>
+<br>
+ <div> Contenu : </div>
+ <br>
+{% autoescape off %}
+<pre> {{ mail.content }} </pre>
+{% endautoescape %}
+
+</body>
+</html>

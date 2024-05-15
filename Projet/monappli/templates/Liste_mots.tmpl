@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 
-
 <style>
        a {
     color: white;
@@ -54,6 +53,9 @@ img {
 
 
      .bande-bas {
+
+    margin: 0;
+
             position: relative;
             display: flex;
             justify-content: space-between;
@@ -79,7 +81,8 @@ img {
 
 
 
- p {
+
+      p { background: rgba(240, 240, 240, .5) ;
        padding: 15px ;
        width: 40em ;
        font-style: italic ;
@@ -92,6 +95,8 @@ img {
        background-position: center;
        border-radius: 10px;
        color: White;
+
+
          }
 
     div.envoi { text-align: center ;
@@ -103,12 +108,11 @@ img {
     }
 
 
-div.texte { font-size: 20px ;
+div.texte { font-size: 22px ;
     margin-left: 170px ;
     margin-right: 160px ;
     text-align: left;
     }
-
 
 
     </style>
@@ -118,8 +122,8 @@ div.texte { font-size: 20px ;
 </head>
 <body style="background-color:white;">
 
-<div class="bande-couleur">
 
+<div class="bande-couleur">
     <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
     <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
     <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
@@ -130,61 +134,42 @@ div.texte { font-size: 20px ;
 </div>
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
-
-<br>
-
-    <h1 > Attributs d’un employé </h1>
-    <form action="{% url 'attributs_employes' %}" method="post">
-        {% csrf_token %}
-
     <br>
 
-
-        <div class="texte">
-            Cette page a été conçue pour faciliter la recherche des attributs d'un employé de notre entreprise.
-            Vous pouvez simplement saisir le nom et le prénom de l'employé ou son adresse e-mail dans le champ de recherche,
-             et notre système récupérera automatiquement les attributs associés à cet employé.
-        </div>
-
-        <br>
-        <br>
-        <br>
-
-        <div>
-            Rentrer le Nom et Prénom d'un employé pour obtenir ses attributs
-        </div>
-
-        <br>
-
-        <p>
-
-
-            Nom de l'employé:
-            <input type="text" name="nom_employe" style="margin-right: 30px;">
-
-            Prénom de l'employé:
-            <input type="text" name="prenom_employe">
-
-        </p>
-        <br>
-        <br>
-
-        <div> Rentrer l'adresse mail d'un employé pour obtenir ses attributs </div>
+<h1> Liste des mails contenant les mots : {% for item in liste_mots %} {{ item }} {% endfor %} </h1>
 
 <br>
 
-        <p>
-        adresse mail de l'employé:
-            <input type="text" name="adresse_employe">
-        </p>
+
+<table border="1", style="margin: 0 auto;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Sujet</th>
+            <th>Contenu</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in resultats %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.nom }}</td>
+            <td>{{ item.prenom }}</td>
+            <td>{{ item.subject }}</td>
+            <td><a href="{% url 'detail_mail' mail_id=item.id %}" style="color:Black;" target="_blank">Afficher mail</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<br>
 <br>
 
-    <div class="envoi"><input type="submit" value="Rechercher"></div>
-    </div>
 
-
- <br>
-    <br>
 <div class="bande-bas">
     <!-- Texte dans la bande de couleur en bas -->
     <div class="bande-bas-texte">© 2024 Université d'Angers</div>
@@ -192,8 +177,5 @@ div.texte { font-size: 20px ;
     <img src="https://www.univ-angers.fr/_resource/Documents/DCOM/logo/VERTICAL/PAPIER/PNG/ua_v_couleur.png?download=true" alt="Logo UA">
 </div>
 
-
-</form>
 </body>
 </html>
-
