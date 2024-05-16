@@ -149,6 +149,9 @@ div.texte { font-size: 22px ;
     <p>Mon seuil : {{ seuil }}</p>
 
     <br>
+    {% if couples|length_is:"0" %}
+    <div> Il n'y a pas eu de mails échangés entre le {{ date_debut }} et le {{ date_fin }}. </div>
+    {% else %}
 
 <table border="1", style="margin: 0 auto;">
     <thead>
@@ -173,7 +176,7 @@ div.texte { font-size: 22px ;
         {% endfor %}
     </tbody>
 </table>
-
+ {% endif %}
    <br>
     <br>
 <div class="bande-bas">
