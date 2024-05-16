@@ -234,17 +234,23 @@ having count(*) > %s;""", [date_debut, date_fin, seuil])
             DF1 = pd.DataFrame(liste11)
             DF2 = pd.DataFrame(liste55)
 
-            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'))
-            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'))
+            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
+                            name='Inerne')
+            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
+                            name='Externe')
 
             # Création de la figure avec les deux traces
             fig = go.Figure(data=[trace1, trace2])
 
-            fig.update_layout(title=f'Top 10 des employés ayant envoyé plus de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group')
+            fig.update_layout(title=f'Principaux employés ayant envoyé plus de {seuil} mails', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group', legend=dict(
+                    x=1.0,
+                    y=1.0,
+                    bgcolor='rgba(255, 255, 255, 0)',
+                    bordercolor='rgba(255, 255, 255, 0)'
+                ), showlegend=True)
 
             disp1 = plotly.offline.plot(fig, output_type='div')
-
 
         with connection.cursor() as cursor:
             cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
@@ -257,7 +263,8 @@ INNER JOIN (
     SELECT r.receiver_id, COUNT(*) AS nb_mails_recus
     FROM monappli_receiver r
     INNER JOIN monappli_mail m ON r.mail_id_id = m.id
-    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc'
+    INNER JOIN monappli_adressemail a ON m.sender_id = a.id
+    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc' and a.intext = true
     GROUP BY r.receiver_id
     HAVING COUNT(*) > %s
 ) AS recus ON recus.receiver_id = t.id
@@ -277,25 +284,64 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
             liste2 = sorted(liste2, key=lambda x: x['nb_mails_recu'], reverse=True)
             liste22 = liste2[:10]
 
-            DF=pd.DataFrame(liste22)
-            fig=go.Figure(data=[go.Bar(x=DF['nom'],y=DF['nb_mails_recu'],marker=dict(color='rgb(47, 118, 128)'))])
-            fig.update_layout(title=f'Top 10 des employés ayant reçu plus de {seuil} mails',xaxis_title='Employés',yaxis_title='Nombre de mails reçus',width=600, height=400)
-            disp2=plotly.offline.plot(fig,output_type='div')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
+FROM (
+    SELECT e.nom, e.prenom, a.id
+    FROM monappli_employee e
+    INNER JOIN monappli_adressemail a ON e.id = a.employee_id_id
+) AS t
+INNER JOIN (
+    SELECT r.receiver_id, COUNT(*) AS nb_mails_recus
+    FROM monappli_receiver r
+    INNER JOIN monappli_mail m ON r.mail_id_id = m.id
+    INNER JOIN monappli_adressemail a ON m.sender_id = a.id
+    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc' and a.intext = false
+    GROUP BY r.receiver_id
+    HAVING COUNT(*) > %s
+) AS recus ON recus.receiver_id = t.id
+GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
+                rows22 = cursor.fetchall()
+
+                liste6 = []
+                for row in rows22:
+                    nom, prenom, nb_mails_recu = row
+                    liste6.append({
+                        'nom': nom,
+                        'prenom': prenom,
+                        'nb_mails_recu': nb_mails_recu
+                    })
+
+                # trier par odre decroissant
+                liste6 = sorted(liste6, key=lambda x: x['nb_mails_recu'], reverse=True)
+                liste66 = liste6[:10]
+
+                DF1= pd.DataFrame(liste22)
+                DF2= pd.DataFrame(liste66)
+                trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
+                                name='Inerne')
+                trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
+                                name='Externe')
+                fig = go.Figure(data=[trace1, trace2])
+                fig.update_layout(title=f'Principaux employés ayant reçu plus de {seuil} mails',xaxis_title='Employés',yaxis_title='Nombre de mails reçus',width=600, height=400)
+                disp2=plotly.offline.plot(fig,output_type='div')
 
 
 
 
 
         with connection.cursor() as cursor:
-            cursor.execute("""select e.nom, e.prenom,nb_mails_envoyes from monappli_employee e
-inner join (select monappli_adressemail.employee_id_id, nb_mails_envoyes from monappli_adressemail
-inner join
-    (select sender_id, count(*) as nb_mails_envoyes
-    from monappli_mail
-    where date between %s and %s
-    group by sender_id
-    having count(*) < %s) as envoyes on envoyes.sender_id = monappli_adressemail.id
-    where monappli_adressemail.employee_id_id is not null) as envoie2 on e.id = envoie2.employee_id_id;""", [date_debut, date_fin, seuil])
+            cursor.execute("""SELECT
+     e.nom, e.prenom , COUNT(*) AS nombre_de_mails_envoyes
+FROM monappli_mail m
+INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
+inner join monappli_adressemail a on m.sender_id = a.id
+inner join monappli_adressemail b on r.receiver_id = b.id
+inner join monappli_employee e on a.employee_id_id = e.id
+WHERE m.date BETWEEN %s AND %s AND b.intext = true AND r.type_r != 'Bcc'
+GROUP BY e.nom, e.prenom
+having count(*) < %s;""", [date_debut, date_fin, seuil])
             rows3 = cursor.fetchall()
 
             liste3=[]
@@ -309,10 +355,43 @@ inner join
             liste3 = sorted(liste3, key=lambda x: x['nb_mails_envoyes'], reverse=True)
             liste33 = liste3[:10]
 
-            DF = pd.DataFrame(liste33)
-            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'))])
-            fig.update_layout(title=f'Top 10 des employés ayant envoyé moins de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails envoyés', width=600, height=400)
+
+        with connection.cursor() as cursor:
+            cursor.execute("""SELECT
+     e.nom, e.prenom , COUNT(*) AS nombre_de_mails_envoyes
+FROM monappli_mail m
+INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
+inner join monappli_adressemail a on m.sender_id = a.id
+inner join monappli_adressemail b on r.receiver_id = b.id
+inner join monappli_employee e on a.employee_id_id = e.id
+WHERE m.date BETWEEN %s AND %s AND b.intext = false AND r.type_r != 'Bcc'
+GROUP BY e.nom, e.prenom
+having count(*) < %s; """, [date_debut, date_fin, seuil])
+
+            rows33 = cursor.fetchall()
+
+            liste7 = []
+            for row in rows33:
+                nom, prenom, nb_mails_envoyes = row
+                liste7.append({
+                    'nom': nom,
+                    'prenom': prenom,
+                    'nb_mails_envoyes': nb_mails_envoyes
+                })
+
+            liste7 = sorted(liste7, key=lambda x: x['nb_mails_envoyes'], reverse=True)
+            liste77 = liste7[:10]
+            DF1 = pd.DataFrame(liste33)
+            DF2 = pd.DataFrame(liste77)
+            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
+                            name='Inerne')
+            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
+                            name='Externe')
+
+            fig = go.Figure(data=[trace1, trace2])
+
+            fig.update_layout(title=f'Principaux employés ayant envoyé moins de {seuil} mails', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group')
             disp3 = plotly.offline.plot(fig, output_type='div')
 
         with connection.cursor() as cursor:
@@ -326,7 +405,8 @@ INNER JOIN (
     SELECT r.receiver_id, COUNT(*) AS nb_mails_recus
     FROM monappli_receiver r
     INNER JOIN monappli_mail m ON r.mail_id_id = m.id
-    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc'
+    INNER JOIN monappli_adressemail a ON m.sender_id = a.id
+    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc' and a.intext = true
     GROUP BY r.receiver_id
     HAVING COUNT(*) < %s
 ) AS recus ON recus.receiver_id = t.id
@@ -342,13 +422,51 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                     'nb_mails_recu': nb_mails_recu
                 })
 
-            liste4 = sorted(liste2, key=lambda x: x['nb_mails_recu'], reverse=True)
+            liste4 = sorted(liste4, key=lambda x: x['nb_mails_recu'], reverse=True)
             liste44 = liste4[:10]
 
-            DF = pd.DataFrame(liste44)
-            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails_recu'],marker=dict(color='rgb(47, 118, 128)'))])
-            fig.update_layout(title=f'Top 10 des employés ayant reçu moins de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails reçus', width=600, height=400)
+        with connection.cursor() as cursor:
+            cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
+FROM (
+    SELECT e.nom, e.prenom, a.id
+    FROM monappli_employee e
+    INNER JOIN monappli_adressemail a ON e.id = a.employee_id_id
+) AS t
+INNER JOIN (
+    SELECT r.receiver_id, COUNT(*) AS nb_mails_recus
+    FROM monappli_receiver r
+    INNER JOIN monappli_mail m ON r.mail_id_id = m.id
+    INNER JOIN monappli_adressemail a ON m.sender_id = a.id
+    WHERE m.date BETWEEN %s AND %s AND r.type_r != 'Bcc' and a.intext = false
+    GROUP BY r.receiver_id
+    HAVING COUNT(*) < %s
+) AS recus ON recus.receiver_id = t.id
+GROUP BY t.nom, t.prenom; """, [date_debut, date_fin, seuil])
+
+            rows44 = cursor.fetchall()
+
+            liste8 = []
+            for row in rows44:
+                nom, prenom, nb_mails_recu = row
+                liste8.append({
+                    'nom': nom,
+                    'prenom': prenom,
+                    'nb_mails_recu': nb_mails_recu
+                })
+
+            liste8 = sorted(liste8, key=lambda x: x['nb_mails_recu'], reverse=True)
+            liste88 = liste8[:10]
+
+            DF1 = pd.DataFrame(liste44)
+            DF2 = pd.DataFrame(liste88)
+            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
+                            name='Inerne')
+            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
+                            name='Externe')
+            fig = go.Figure(data=[trace1, trace2])
+
+            fig.update_layout(title=f'Principaux employés ayant reçu moins de {seuil} mails', xaxis_title='Employés',
+                              yaxis_title='Nombre de mails reçus', width=600, height=400, barmode='group')
             disp4 = plotly.offline.plot(fig, output_type='div')
 
 
@@ -368,7 +486,7 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                 'disp4': disp4,
                 'liste11': liste11,
                 'disp3': disp3,
-                'rows1' : rows1,
+
 
 
 

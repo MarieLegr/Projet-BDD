@@ -189,7 +189,7 @@ table.mon_tableau  {
     <p>Ma date de fin : {{ date_fin }}</p>
     <p>Mon seuil : {{ seuil }}</p>
 
-    <p>Mon seuil : {{ rows1 }}</p>
+
 
     <br>
 
@@ -197,10 +197,10 @@ table.mon_tableau  {
 
     <div class="texte">
     Voici les principaux employés ayant envoyés/reçus plus de {{seuil}} mails entre le {{ date_debut }} et le {{ date_fin }}.
+    Avec la possibilité de visualiser les echanges interne ou externe.
 
 </div>
 
-<p> liste1 : {{ liste1 }}</p>
 
 <br>
 
@@ -223,6 +223,7 @@ table.mon_tableau  {
     <br>
     Les employés ayant envoyé plus de {{ seuil }} mails sont affichés dans le tableau de gauche,
     tandis que ceux ayant reçu plus de {{ seuil }} mails sont affichés dans le tableau de droite.
+    Ici on ne différencie pas les echanges interne et externe.
 </div>
 
     <br>
@@ -278,6 +279,7 @@ table.mon_tableau  {
 
 <div class="texte">
 Voici les principaux employés ayant envoyés/reçus moins de {{seuil}} mails entre le {{ date_debut }} et le {{ date_fin }}.
+Avec la possibilité de visualiser les echanges interne ou externe.
 </div>
 <br>
 
@@ -299,6 +301,7 @@ Voici les principaux employés ayant envoyés/reçus moins de {{seuil}} mails en
     <br>
     Les employés ayant envoyé moins de {{ seuil }} mails sont affichés dans le tableau de gauche,
     tandis que ceux ayant reçu moins de {{ seuil }} mails sont affichés dans le tableau de droite.
+    Ici on ne différencie pas les echanges interne et externe.
 </div>
 
     <br>
