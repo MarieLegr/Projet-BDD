@@ -178,15 +178,17 @@ def employeXmail(request):
         seuil = request.POST.get('seuil')
 
         with connection.cursor() as cursor:
-            cursor.execute("""select e.nom, e.prenom,nb_mails_envoyes from monappli_employee e
-inner join (select monappli_adressemail.employee_id_id, nb_mails_envoyes from monappli_adressemail
-inner join
-    (select sender_id, count(*) as nb_mails_envoyes
-    from monappli_mail
-    where date between %s and %s
-    group by sender_id
-    having count(*) > %s) as envoyes on envoyes.sender_id = monappli_adressemail.id
-    where monappli_adressemail.employee_id_id is not null) as envoie2 on e.id = envoie2.employee_id_id;""", [date_debut, date_fin, seuil])
+            cursor.execute("""SELECT
+     e.nom, e.prenom , COUNT(*) AS nombre_de_mails_envoyes
+FROM monappli_mail m
+INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
+inner join monappli_adressemail a on m.sender_id = a.id
+inner join monappli_adressemail b on r.receiver_id = b.id
+inner join monappli_employee e on a.employee_id_id = e.id
+WHERE m.date BETWEEN %s AND %s AND b.intext = true AND r.type_r != 'Bcc'
+GROUP BY e.nom, e.prenom
+having count(*) > %s;""", [date_debut, date_fin, seuil])
+
             rows1 = cursor.fetchall()
 
 
@@ -202,10 +204,45 @@ inner join
             liste1 = sorted(liste1, key=lambda x: x['nb_mails_envoyes'], reverse=True)
             liste11 = liste1[:10]
 
-            DF = pd.DataFrame(liste11)
-            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'))])
+        with connection.cursor() as cursor:
+            cursor.execute("""SELECT
+     e.nom, e.prenom , COUNT(*) AS nombre_de_mails_envoyes
+FROM monappli_mail m
+INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
+inner join monappli_adressemail a on m.sender_id = a.id
+inner join monappli_adressemail b on r.receiver_id = b.id
+inner join monappli_employee e on a.employee_id_id = e.id
+WHERE m.date BETWEEN %s AND %s AND b.intext = false AND r.type_r != 'Bcc'
+GROUP BY e.nom, e.prenom
+having count(*) > %s;""", [date_debut, date_fin, seuil])
+
+            rows11 = cursor.fetchall()
+            liste5 = []
+            for row in rows11:
+                nom, prenom, nb_mails_envoyes = row
+                liste5.append({
+                    'nom': nom,
+                    'prenom': prenom,
+                    'nb_mails_envoyes': nb_mails_envoyes
+                })
+
+            liste5 = sorted(liste5, key=lambda x: x['nb_mails_envoyes'], reverse=True)
+            liste55 = liste5[:10]
+
+
+
+            DF1 = pd.DataFrame(liste11)
+            DF2 = pd.DataFrame(liste55)
+
+            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'))
+            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'))
+
+            # Création de la figure avec les deux traces
+            fig = go.Figure(data=[trace1, trace2])
+
             fig.update_layout(title=f'Top 10 des employés ayant envoyé plus de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails envoyés', width=600, height=400)
+                              yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group')
+
             disp1 = plotly.offline.plot(fig, output_type='div')
 
 
@@ -330,7 +367,8 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                 'liste44': liste44,
                 'disp4': disp4,
                 'liste11': liste11,
-                'disp3': disp3
+                'disp3': disp3,
+                'rows1' : rows1,
 
 
 
@@ -579,27 +617,6 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                         bordercolor='rgba(255, 255, 255, 0)'
                     ), showlegend=True)
                 disp = plotly.offline.plot(fig, output_type='div')
-
-                with connection.cursor() as cursor:
-                    cursor.execute("""SELECT
-                DATE_TRUNC('day', m.date) AS jour,
-                COUNT(*) AS nombre_de_mails
-            FROM monappli_mail m
-            INNER JOIN monappli_receiver r ON m.id = r.mail_id_id
-            inner join monappli_adressemail a on m.sender_id = a.id
-            inner join monappli_adressemail b on r.receiver_id = b.id
-            WHERE m.date BETWEEN %s AND %s and a.intext = true and b.intext = true and r.type_r != 'Bcc'
-            GROUP BY jour
-            ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
-                    rows = cursor.fetchall()
-
-                    liste2 = []
-                    for row in rows:
-                        jour, nb_mails = row
-                        liste.append({
-                            'jour': jour,
-                            'nb_mails': nb_mails
-                        })
 
 
         context = {
