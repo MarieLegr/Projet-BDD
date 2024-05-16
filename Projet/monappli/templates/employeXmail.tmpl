@@ -172,13 +172,13 @@ table.mon_tableau  {
 
 <div class="bande-couleur">
     <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
-    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
-    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
-    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a>
-    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a>
-    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
-    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
-    <a href="http://127.0.0.1:8000/monappli/requete7" >Requete 7</a>
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Attributs</a>
+    <a href="http://127.0.0.1:8000/monappli/requete2" >X mails</a>
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Communication</a>
+    <a href="http://127.0.0.1:8000/monappli/request4" >Couples employés</a>
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Jours</a>
+    <a href="http://127.0.0.1:8000/monappli/requete6" >mots</a>
+    <a href="http://127.0.0.1:8000/monappli/requete7" >Conversations</a>
 </div>
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
@@ -188,8 +188,36 @@ table.mon_tableau  {
     <p>Ma date du début : {{ date_debut }}</p>
     <p>Ma date de fin : {{ date_fin }}</p>
     <p>Mon seuil : {{ seuil }}</p>
+<br>
+    <br>
+    <br>
+    <br>
 
-
+{% if disp1|length_is:"0" %}
+    <div> Il n'y a pas eu de mails envoyés ou reçus  </div>
+    <br>
+    <br>
+    <br>
+    <br>
+{% elif disp2|length_is:"0" %}
+    <div> Il n'y a pas eu de mails envoyés ou reçus . </div>
+    <br>
+    <br>
+    <br>
+    <br>
+{% elif disp3|length_is:"0" %}
+<div> Il n'y a pas eu de mails envoyés ou reçus. </div>
+<br>
+    <br>
+    <br>
+    <br>
+{% elif disp4|length_is:"0" %}
+<div> Il n'y a pas eu de mails envoyés ou reçus . </div>
+<br>
+    <br>
+    <br>
+    <br>
+{% else %}
 
     <br>
 
@@ -350,6 +378,7 @@ Avec la possibilité de visualiser les echanges interne ou externe.
     </div>
 </div>
 
+{% endif %}
 
 <br>
 <br>

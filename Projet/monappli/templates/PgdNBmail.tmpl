@@ -103,7 +103,6 @@ img {
 
     h1 { font-size: 35px ;
     font-weight: bold ;
-    text-decoration: underline;
     }
 
 
@@ -124,13 +123,13 @@ div.texte { font-size: 22px ;
 
 <div class="bande-couleur">
     <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
-    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
-    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
-    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a>
-    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a>
-    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
-    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
-    <a href="http://127.0.0.1:8000/monappli/requete7" >Requete 7</a>
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Attributs</a>
+    <a href="http://127.0.0.1:8000/monappli/requete2" >X mails</a>
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Communication</a>
+    <a href="http://127.0.0.1:8000/monappli/request4" >Couples employés</a>
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Jours</a>
+    <a href="http://127.0.0.1:8000/monappli/requete6" >mots</a>
+    <a href="http://127.0.0.1:8000/monappli/requete7" >Conversations</a>
 </div>
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
@@ -145,6 +144,13 @@ div.texte { font-size: 22px ;
     <p> Type d'échange : {{ echange }}</p>
 
     <br>
+    {% if liste|length_is:"0" %}
+     <div> Il n'y a pas eu de mails échangés entre le {{ date_debut }} et le {{ date_fin }}. </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    {%else%}
 
     <br>
 <div class="texte">
@@ -184,9 +190,10 @@ Le tableau ci-dessous présente le nombre de mails échangés chaque jour entre 
     </tbody>
 </table>
 
-
+{% endif %}
    <br>
     <br>
+
 <div class="bande-bas">
     <!-- Texte dans la bande de couleur en bas -->
     <div class="bande-bas-texte">© 2024 Université d'Angers</div>

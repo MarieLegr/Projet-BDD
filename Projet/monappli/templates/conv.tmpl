@@ -141,14 +141,13 @@ div.texte { font-size: 22px ;
 
 <div class="bande-couleur">
     <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
-    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
-    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
-    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a>
-    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a>
-    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
-    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
-    <a href="http://127.0.0.1:8000/monappli/requete7" >Requete 7</a>
-
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Attributs</a>
+    <a href="http://127.0.0.1:8000/monappli/requete2" >X mails</a>
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Communication</a>
+    <a href="http://127.0.0.1:8000/monappli/request4" >Couples employés</a>
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Jours</a>
+    <a href="http://127.0.0.1:8000/monappli/requete6" >mots</a>
+    <a href="http://127.0.0.1:8000/monappli/requete7" >Conversations</a>
 </div>
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
@@ -162,7 +161,13 @@ div.texte { font-size: 22px ;
     <br>
 <hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
 
-
+{% if liste1|length_is:"0" %}
+    <div> Il n'y a pas eu de conversation entre le {{ date_debut }} et le {{ date_fin }}, pour  {{employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}  </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    {% else %}
 <br>
 <div class="texte">
 Les tableau ci-dessous montre les mails échangés entre {{ employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}, ils sont classés par sujet, un tableau représente une conversation.
@@ -207,7 +212,7 @@ Les tableau ci-dessous montre les mails échangés entre {{ employe_nom1 }} {{ e
     {% endfor %}
 {% endblock %}
 
-
+{% endif %}
 
 
 

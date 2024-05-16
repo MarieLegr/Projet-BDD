@@ -123,37 +123,62 @@ div.texte { font-size: 22px ;
 
 <div class="bande-couleur">
     <a href="http://127.0.0.1:8000/monappli/index" >Accueil</a>
-    <a href="http://127.0.0.1:8000/monappli/requete1" >Requete 1</a>
-    <a href="http://127.0.0.1:8000/monappli/requete2" >Requete 2</a>
-    <a href="http://127.0.0.1:8000/monappli/requete3" >Requete 3</a>
-    <a href="http://127.0.0.1:8000/monappli/request4" >Requete 4</a>
-    <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
-    <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
-    <a href="http://127.0.0.1:8000/monappli/requete7" >Requete 7</a>
+    <a href="http://127.0.0.1:8000/monappli/requete1" >Attributs</a>
+    <a href="http://127.0.0.1:8000/monappli/requete2" >X mails</a>
+    <a href="http://127.0.0.1:8000/monappli/requete3" >Communication</a>
+    <a href="http://127.0.0.1:8000/monappli/request4" >Couples employés</a>
+    <a href="http://127.0.0.1:8000/monappli/requete5" >Jours</a>
+    <a href="http://127.0.0.1:8000/monappli/requete6" >mots</a>
+    <a href="http://127.0.0.1:8000/monappli/requete7" >Conversations</a>
 </div>
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
+
+<br>
+<br>
+
+
+    {% if coupleadress|length_is:"0" %}
+    <p>Aucun employé trouvé pour cette adresse mail</p>
+    <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+    {% else %}
     <br>
 
     <h1> Informations trouvée sur {{nom_employe }} {{ prenom_employe }}</h1>
-    <br>
+</br>
+
     <p>Nom : {{ nom_employe }}</p>
     <p>Prénom : {{ prenom_employe }}</p>
     <p>Catégorie : {{ categorie }}</p>
     <p>
     {% for ad in coupleadress %}
-         adresse mail : {{ ad }}
+          {{ ad }}
+          <br>
     {% endfor %}
     </p>
 
-    <br>
+
+   {% endif %}
+
+  <br>
 
     <br>
 
     <br>
     <br>
     <br>
-
 
 <div class="bande-bas">
     <!-- Texte dans la bande de couleur en bas -->

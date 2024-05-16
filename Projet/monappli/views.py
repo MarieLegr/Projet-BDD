@@ -87,15 +87,16 @@ ORDER BY COUNT(*) DESC;
 
 
 def requete1(request):
-    return render(request, 'requete1.tmpl',
-                  {
-
-                  })
+    employees = Employee.objects.all()
+    context = {"employees": employees}
+    return render(request, "requete1.tmpl", context=context)
 
 def attributs_employes(request):
     if request.method == 'POST':
-        nom_employe = request.POST.get('nom_employe')
-        prenom_employe = request.POST.get('prenom_employe')
+        id = request.POST.get('employe')
+        employe = Employee.objects.get(id=id)
+        employe_nom = employe.nom
+        employe_prenom = employe.prenom
         adresse_employe = request.POST.get('adresse_employe')
 
         if adresse_employe == "":
@@ -106,7 +107,7 @@ def attributs_employes(request):
                     LEFT JOIN monappli_category c ON e.category_id_id = c.id
                     LEFT JOIN monappli_adressemail am ON e.id = am.employee_id_id
                     WHERE e.nom = %s AND e.prenom = %s;
-                """, [nom_employe, prenom_employe,])
+                """, [employe_nom, employe_prenom,])
                 rows = cursor.fetchall()
 
             if rows:
@@ -115,18 +116,18 @@ def attributs_employes(request):
                     nom_employe, prenom_employe, categorie, adresse_employe = row
                     coupleadress.append(adresse_employe)
 
+
                 if not categorie:
                     categorie = "Aucune catégorie trouvée."
-                context = {
-                    'nom_employe': nom_employe,
-                    'prenom_employe': prenom_employe,
-                    'categorie': categorie,
-                    'coupleadress': coupleadress
+
+            context = {
+                'nom_employe': nom_employe,
+                'prenom_employe': prenom_employe,
+                'categorie': categorie,
+                'coupleadress': coupleadress
                 }
-                return render(request, 'attributs_employes.tmpl', context)
-            else:
-                # Gérer le cas où aucun résultat n'est trouvé pour l'adresse email
-                return HttpResponse("Aucun employé trouvé pour cette adresse email.")
+            return render(request, 'attributs_employes.tmpl', context)
+
 
         else:
             with connection.cursor() as cursor:
@@ -143,25 +144,27 @@ def attributs_employes(request):
                 coupleadress=[]
                 for row in rows:
                     nom_employe, prenom_employe, categorie, adresse_employe = row
-                    coupleadress.append({
-                        'adresse_employe': adresse_employe
-                    })
+                    coupleadress.append(adresse_employe)
 
-                if not categorie:
-                    categorie = "Aucune catégorie trouvée."
+                    if not categorie:
+                        categorie = "Aucune catégorie trouvée."
 
-
-                context = {
-                    'nom_employe': nom_employe,
-                    'prenom_employe': prenom_employe,
-                    'categorie': categorie,
-                    'coupleadress': coupleadress
-                }
-                return render(request, 'attributs_employes.tmpl', context)
             else:
-                # Gérer le cas où aucun résultat n'est trouvé pour l'adresse email
-                return HttpResponse("Aucun employé trouvé pour cette adresse email.")
+                coupleadress = []
+                categorie = "Aucune catégorie trouvée."
 
+
+
+            context = {
+                'nom_employe': nom_employe,
+                'prenom_employe': prenom_employe,
+                'categorie': categorie,
+                'coupleadress': coupleadress
+            }
+
+            return render(request, 'attributs_employes.tmpl', context)
+    else:
+        return render(request, 'requete1.tmpl')
   
 
 def requete2(request):
@@ -176,6 +179,11 @@ def employeXmail(request):
         date_debut = request.POST.get('date_debut')
         date_fin = request.POST.get('date_fin')
         seuil = request.POST.get('seuil')
+
+        if seuil == "" or int(seuil) < 0:
+            return render(request, 'requete2.tmpl',{
+            })
+
 
         with connection.cursor() as cursor:
             cursor.execute("""SELECT
@@ -230,27 +238,32 @@ having count(*) > %s;""", [date_debut, date_fin, seuil])
             liste55 = liste5[:10]
 
 
+            if len(liste11) > 0 and len(liste55) > 0:
 
-            DF1 = pd.DataFrame(liste11)
-            DF2 = pd.DataFrame(liste55)
 
-            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
-                            name='Inerne')
-            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
-                            name='Externe')
+                DF1 = pd.DataFrame(liste11)
+                DF2 = pd.DataFrame(liste55)
 
-            # Création de la figure avec les deux traces
-            fig = go.Figure(data=[trace1, trace2])
+                trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
+                                name='Inerne')
+                trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
+                                name='Externe')
 
-            fig.update_layout(title=f'Principaux employés ayant envoyé plus de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group', legend=dict(
-                    x=1.0,
-                    y=1.0,
-                    bgcolor='rgba(255, 255, 255, 0)',
-                    bordercolor='rgba(255, 255, 255, 0)'
-                ), showlegend=True)
+                # Création de la figure avec les deux traces
+                fig = go.Figure(data=[trace1, trace2])
 
-            disp1 = plotly.offline.plot(fig, output_type='div')
+                fig.update_layout(title=f'Principaux employés ayant envoyé plus de {seuil} mails', xaxis_title='Employés',
+                                  yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group', legend=dict(
+                        x=1.0,
+                        y=1.0,
+                        bgcolor='rgba(255, 255, 255, 0)',
+                        bordercolor='rgba(255, 255, 255, 0)'
+                    ), showlegend=True)
+
+                disp1 = plotly.offline.plot(fig, output_type='div')
+
+            else:
+                disp1 = []
 
         with connection.cursor() as cursor:
             cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
@@ -317,15 +330,20 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                 liste6 = sorted(liste6, key=lambda x: x['nb_mails_recu'], reverse=True)
                 liste66 = liste6[:10]
 
-                DF1= pd.DataFrame(liste22)
-                DF2= pd.DataFrame(liste66)
-                trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
-                                name='Inerne')
-                trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
-                                name='Externe')
-                fig = go.Figure(data=[trace1, trace2])
-                fig.update_layout(title=f'Principaux employés ayant reçu plus de {seuil} mails',xaxis_title='Employés',yaxis_title='Nombre de mails reçus',width=600, height=400)
-                disp2=plotly.offline.plot(fig,output_type='div')
+                if len(liste66) > 0 and len(liste22) > 0:
+
+                    DF1= pd.DataFrame(liste22)
+                    DF2= pd.DataFrame(liste66)
+                    trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
+                                    name='Inerne')
+                    trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
+                                    name='Externe')
+                    fig = go.Figure(data=[trace1, trace2])
+                    fig.update_layout(title=f'Principaux employés ayant reçu plus de {seuil} mails',xaxis_title='Employés',yaxis_title='Nombre de mails reçus',width=600, height=400)
+                    disp2=plotly.offline.plot(fig,output_type='div')
+
+                else:
+                    disp2 = []
 
 
 
@@ -381,18 +399,24 @@ having count(*) < %s; """, [date_debut, date_fin, seuil])
 
             liste7 = sorted(liste7, key=lambda x: x['nb_mails_envoyes'], reverse=True)
             liste77 = liste7[:10]
-            DF1 = pd.DataFrame(liste33)
-            DF2 = pd.DataFrame(liste77)
-            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
-                            name='Inerne')
-            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
-                            name='Externe')
 
-            fig = go.Figure(data=[trace1, trace2])
+            if len(liste33) > 0 and len(liste77) > 0:
 
-            fig.update_layout(title=f'Principaux employés ayant envoyé moins de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group')
-            disp3 = plotly.offline.plot(fig, output_type='div')
+                DF1 = pd.DataFrame(liste33)
+                DF2 = pd.DataFrame(liste77)
+                trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
+                                name='Inerne')
+                trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
+                                name='Externe')
+
+                fig = go.Figure(data=[trace1, trace2])
+
+                fig.update_layout(title=f'Principaux employés ayant envoyé moins de {seuil} mails', xaxis_title='Employés',
+                                  yaxis_title='Nombre de mails envoyés', width=600, height=400, barmode='group')
+                disp3 = plotly.offline.plot(fig, output_type='div')
+
+            else:
+                disp3 = []
 
         with connection.cursor() as cursor:
             cursor.execute("""SELECT t.nom, t.prenom, SUM(recus.nb_mails_recus) AS total_mails_recus
@@ -457,20 +481,28 @@ GROUP BY t.nom, t.prenom; """, [date_debut, date_fin, seuil])
             liste8 = sorted(liste8, key=lambda x: x['nb_mails_recu'], reverse=True)
             liste88 = liste8[:10]
 
-            DF1 = pd.DataFrame(liste44)
-            DF2 = pd.DataFrame(liste88)
-            trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
-                            name='Inerne')
-            trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
-                            name='Externe')
-            fig = go.Figure(data=[trace1, trace2])
+            if len(liste44) > 0 and len(liste88) > 0:
 
-            fig.update_layout(title=f'Principaux employés ayant reçu moins de {seuil} mails', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails reçus', width=600, height=400, barmode='group')
-            disp4 = plotly.offline.plot(fig, output_type='div')
+
+                DF1 = pd.DataFrame(liste44)
+                DF2 = pd.DataFrame(liste88)
+                trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
+                                name='Inerne')
+                trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
+                                name='Externe')
+                fig = go.Figure(data=[trace1, trace2])
+
+                fig.update_layout(title=f'Principaux employés ayant reçu moins de {seuil} mails', xaxis_title='Employés',
+                                  yaxis_title='Nombre de mails reçus', width=600, height=400, barmode='group')
+                disp4 = plotly.offline.plot(fig, output_type='div')
+
+            else :
+                disp4 = []
+
 
 
             context = {
+
                 'liste3': liste3,
                 'liste4': liste4,
                 'liste1': liste1,
@@ -486,6 +518,14 @@ GROUP BY t.nom, t.prenom; """, [date_debut, date_fin, seuil])
                 'disp4': disp4,
                 'liste11': liste11,
                 'disp3': disp3,
+                'liste55': liste55,
+                'liste6': liste6,
+                'liste66': liste66,
+                'liste7': liste7,
+                'liste77': liste77,
+                'liste8': liste8,
+                'liste88': liste88,
+
 
 
 
@@ -584,20 +624,26 @@ GROUP BY e_receiver.nom ,e_receiver.prenom;""", [employe_nom, employe_prenom, da
 
             liste33 = liste3[:10]
 
-            DF = pd.DataFrame(liste33)
-            fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'), name=f'Employés ayant communiqué avec {employe_nom} {employe_prenom} entre le {date_debut} et le {date_fin}')])
-            fig.update_layout(title=f'Top 10 des employés', xaxis_title='Employés',
-                              yaxis_title='Nombre de mails', width=1000, height=400,
-                                legend=dict(
-                                    x=1.0,
-                                    y=1.0,
-                                    bgcolor='rgba(255, 255, 255, 0)',
-                                    bordercolor='rgba(255, 255, 255, 0)'
-                                ), showlegend=True)
-            disp = plotly.offline.plot(fig, output_type='div')
+            if len(liste33)>0:
+
+                DF = pd.DataFrame(liste33)
+                fig = go.Figure(data=[go.Bar(x=DF['nom'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'), name=f'Employés ayant communiqué avec {employe_nom} {employe_prenom} entre le {date_debut} et le {date_fin}')])
+                fig.update_layout(title=f'Top 10 des employés', xaxis_title='Employés',
+                                  yaxis_title='Nombre de mails', width=1000, height=400,
+                                    legend=dict(
+                                        x=1.0,
+                                        y=1.0,
+                                        bgcolor='rgba(255, 255, 255, 0)',
+                                        bordercolor='rgba(255, 255, 255, 0)'
+                                    ), showlegend=True)
+                disp = plotly.offline.plot(fig, output_type='div')
+
+            else :
+                disp = "Pas de données à afficher"
 
         context = {
             'liste1': liste1,
+            'liste33' : liste33,
             'liste2': liste2,
             'employe_nom': employe_nom,
             'employe_prenom': employe_prenom,
@@ -648,18 +694,23 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                 liste = sorted(liste, key=lambda x: x['nb_mails'], reverse=True)
                 liste1 = liste[:5]
 
-                DF = pd.DataFrame(liste1)
-                fig = go.Figure(data=[go.Bar(x=DF['jour'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'), name=f'Nombre de mails échangés {echange}')])
-                fig.update_layout(
-                    title=f'Nombre de mails échangés entre employés internes entre le {date_debut} et le {date_fin}',
-                    xaxis_title='Jour', yaxis_title='Nombre de mails échangés', width=1000, height=400,
-                    legend=dict(
-                        x=1.0,
-                        y=1.0,
-                        bgcolor='rgba(255, 255, 255, 0)',
-                        bordercolor='rgba(255, 255, 255, 0)'
-                    ), showlegend=True)
-                disp = plotly.offline.plot(fig, output_type='div')
+                if len(liste1)>0:
+
+                    DF = pd.DataFrame(liste1)
+                    fig = go.Figure(data=[go.Bar(x=DF['jour'], y=DF['nb_mails'], marker=dict(color='rgb(242, 65, 65)'), name=f'Nombre de mails échangés {echange}')])
+                    fig.update_layout(
+                        title=f'Nombre de mails échangés entre employés internes entre le {date_debut} et le {date_fin}',
+                        xaxis_title='Jour', yaxis_title='Nombre de mails échangés', width=1000, height=400,
+                        legend=dict(
+                            x=1.0,
+                            y=1.0,
+                            bgcolor='rgba(255, 255, 255, 0)',
+                            bordercolor='rgba(255, 255, 255, 0)'
+                        ), showlegend=True)
+                    disp = plotly.offline.plot(fig, output_type='div')
+
+                else :
+                    disp = "Pas de données à afficher"
 
 
         elif echange == 'Interne/Externe':
@@ -765,75 +816,80 @@ def Liste_mots(request):
         Type = request.POST.get('choix')
         nb_mots = int(request.POST.get('nbmot', 0))  # Récupérer le nombre de mots
         liste_mots = []  # Initialiser une liste pour stocker les mots entrés par l'utilisateur
+        if nb_mots <= 0:
+            return render(request, 'requete6.tmpl',
+                   {
 
-        # Parcourir les données du formulaire pour récupérer les mots saisis par l'utilisateur
-        for i in range(1, nb_mots + 1):
-            mot = request.POST.get(f'mot{i}', '')  # Récupérer le mot avec la clé dynamique mot{i}
-            if mot:  # Vérifier si le champ n'est pas vide
-                liste_mots.append(mot)  # Ajouter le mot à la liste
+                   })
+        else :
+            # Parcourir les données du formulaire pour récupérer les mots saisis par l'utilisateur
+            for i in range(1, nb_mots + 1):
+                mot = request.POST.get(f'mot{i}', '')  # Récupérer le mot avec la clé dynamique mot{i}
+                if mot:  # Vérifier si le champ n'est pas vide
+                    liste_mots.append(mot)  # Ajouter le mot à la liste
 
-        conditions = ' AND '.join([f"m.content LIKE '%{mot}%'" for mot in liste_mots])
+            conditions = ' AND '.join([f"m.content LIKE '%{mot}%'" for mot in liste_mots])
 
-        # Générer une liste de paramètres pour la requête SQL en fonction des mots saisis par l'utilisateur
+            # Générer une liste de paramètres pour la requête SQL en fonction des mots saisis par l'utilisateur
 
-        if Type == 'expediteur':
+            if Type == 'expediteur':
 
-        # Construire la requête SQL avec des paramètres dynamique
+            # Construire la requête SQL avec des paramètres dynamique
 
-            # Exécuter la requête SQL avec les paramètres dynamiques
-            with connection.cursor() as cursor:
-                cursor.execute(f"""
-                SELECT m.content, e.prenom, e.nom, m.subject, m.id
-                FROM monappli_mail m 
-                INNER JOIN monappli_adressemail a ON m.sender_id = a.id 
-                INNER JOIN monappli_employee e ON a.employee_id_id = e.id 
-                WHERE {conditions};
-            """)
-                rows = cursor.fetchall()
+                # Exécuter la requête SQL avec les paramètres dynamiques
+                with connection.cursor() as cursor:
+                    cursor.execute(f"""
+                    SELECT m.content, e.prenom, e.nom, m.subject, m.id
+                    FROM monappli_mail m 
+                    INNER JOIN monappli_adressemail a ON m.sender_id = a.id 
+                    INNER JOIN monappli_employee e ON a.employee_id_id = e.id 
+                    WHERE {conditions};
+                """)
+                    rows = cursor.fetchall()
 
-            resultats = []
-            for row in rows:
-                content, prenom, nom,subject, id = row
-                resultats.append({
-                    'content': content,
-                    'prenom': prenom,
-                    'nom': nom,
-                    'subject': subject,
-                    'id': id
-                })
+                resultats = []
+                for row in rows:
+                    content, prenom, nom,subject, id = row
+                    resultats.append({
+                        'content': content,
+                        'prenom': prenom,
+                        'nom': nom,
+                        'subject': subject,
+                        'id': id
+                    })
 
-        else:
+            else:
 
-            # Exécuter la requête SQL avec les paramètres dynamiques
-            with connection.cursor() as cursor:
-                cursor.execute(f"""select m.content, e.prenom, e.nom, m.subject, m.id from monappli_mail m
-inner join monappli_receiver r on m.id = r.mail_id_id
-inner join monappli_adressemail a on r.receiver_id = a.id
-inner join monappli_employee e on a.employee_id_id = e.id
-where {conditions};""")
-                rows = cursor.fetchall()
+                # Exécuter la requête SQL avec les paramètres dynamiques
+                with connection.cursor() as cursor:
+                    cursor.execute(f"""select m.content, e.prenom, e.nom, m.subject, m.id from monappli_mail m
+    inner join monappli_receiver r on m.id = r.mail_id_id
+    inner join monappli_adressemail a on r.receiver_id = a.id
+    inner join monappli_employee e on a.employee_id_id = e.id
+    where {conditions};""")
+                    rows = cursor.fetchall()
 
-            resultats = []
-            for row in rows:
-                content, prenom, nom, subject, id = row
-                resultats.append({
-                    'content': content,
-                    'prenom': prenom,
-                    'nom': nom,
-                    'subject': subject,
-                    'id': id
-                })
+                resultats = []
+                for row in rows:
+                    content, prenom, nom, subject, id = row
+                    resultats.append({
+                        'content': content,
+                        'prenom': prenom,
+                        'nom': nom,
+                        'subject': subject,
+                        'id': id
+                    })
 
 
 
-        context = {
-            'resultats': resultats,
-            'Type': Type,
-            'liste_mots': liste_mots
+            context = {
+                'resultats': resultats,
+                'Type': Type,
+                'liste_mots': liste_mots
 
-        }
+            }
 
-        return render(request, 'Liste_mots.tmpl', context)
+            return render(request, 'Liste_mots.tmpl', context)
 
 from django.shortcuts import render, get_object_or_404
 def detail_mail(request, mail_id):
