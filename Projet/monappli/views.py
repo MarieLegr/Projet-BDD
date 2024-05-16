@@ -9,6 +9,7 @@ from django.db import connection
 import pandas as pd
 import plotly
 import plotly.express as px
+from itertools import product
 import plotly.graph_objects as go
 
 
@@ -705,4 +706,69 @@ def detail_mail(request, mail_id):
     adressemail = AdresseMail.objects.filter(id=mail.sender_id).first()
     sender = Employee.objects.filter(id=adressemail.employee_id_id).first()
     return render(request, 'detail_mail.tmpl', {'mail': mail, 'sender': sender})
+
+
+def requete7(request):
+    employees = Employee.objects.all()
+    context = {"employees": employees}
+    return render(request, "requete7.tmpl", context=context)
+
+
+def conv(request):
+    if request.method =='POST':
+        id1 = request.POST.get('employer')
+        employer = Employee.objects.get(id=id1)
+        employe_nom1 = employer.nom
+        employe_prenom1 = employer.prenom
+        date_debut = request.POST.get('date_debut')
+        date_fin = request.POST.get('date_fin')
+        id2 = request.POST.get('employes')
+        employes = Employee.objects.get(id=id2)
+        employe_nom2 = employes.nom
+        employe_prenom2 = employes.prenom
+
+        with connection.cursor() as cursor:
+            cursor.execute("""select m.id, m.content, m.subject, m.date from monappli_mail m
+inner join monappli_receiver r on m.id = r.mail_id_id
+inner join monappli_adressemail a on m.sender_id = a.id
+inner join monappli_employee e on a.employee_id_id = e.id
+inner join monappli_adressemail b on r.receiver_id = b.id
+inner join monappli_employee f on b.employee_id_id = f.id
+where (f.id = %s and e.id = %s) or (f.id = %s and e.id = %s) and m.date between %s and %s
+order by m.subject, m.date asc;
+""", [id1, id2, id2,id1, date_debut, date_fin])
+
+            rows = cursor.fetchall()
+
+            liste1 = []
+            for row in rows:
+                id, content, subject, date = row
+                liste1.append({
+                    'id': id,
+                    'content': content,
+                    'subject': subject,
+                    'date': date
+                })
+
+            grouped_emails = {}
+            for row in rows:
+                id, content, subject, date = row
+                if subject not in grouped_emails:
+                    grouped_emails[subject] = []
+                grouped_emails[subject].append({'id': id, 'content': content, 'subject': subject, 'date': date})
+
+        context = {
+            'liste1': liste1,
+            'grouped_emails': grouped_emails,
+
+            'employe_nom1': employe_nom1,
+            'employe_prenom1': employe_prenom1,
+            'employe_nom2': employe_nom2,
+            'employe_prenom2': employe_prenom2,
+            'date_debut': date_debut,
+            'date_fin': date_fin,
+        }
+        return render(request, 'conv.tmpl', context)
+    else:
+        return render(request, 'requete3.tmpl')
 

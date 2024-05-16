@@ -115,18 +115,20 @@ div.texte { font-size: 22px ;
     }
 
 
-table.mon_tableau  {
-        border-collapse: collapse;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    table.mon_tableau td {
-       border: 2px solid black;
-       padding: 0.3em;
-       font-family: "Sans-serif";
-       font-size: 20px;
 
-    }
+/* Styles pour les tableaux */
+        table.mon_tableau  {
+            border-collapse: collapse;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        table.mon_tableau td {
+            border: 2px solid black;
+            padding: 0.3em;
+            font-family: "Sans-serif";
+            font-size: 20px;
+            font-size: 16px;
+        }
 
 
     </style>
@@ -146,103 +148,68 @@ table.mon_tableau  {
     <a href="http://127.0.0.1:8000/monappli/requete5" >Requete 5</a>
     <a href="http://127.0.0.1:8000/monappli/requete6" >Requete 6</a>
     <a href="http://127.0.0.1:8000/monappli/requete7" >Requete 7</a>
+
 </div>
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
     <br>
-    <h1>Employé ayant communiqué avec {{employe_nom }} {{ employe_prenom }}</h1>
+    <h1>Conversation entre {{employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}</h1>
     <br>
     <p>Ma date du début : {{ date_debut }}</p>
     <p>Ma date de fin : {{ date_fin }}</p>
-    <p> Mon employé : {{ employe_nom }} {{ employe_prenom }}</p>
+    <p> Mon premier employé : {{ employe_nom1 }} {{ employe_prenom1 }}</p>
+    <p> Mon deuxième employé : {{ employe_nom2 }} {{ employe_prenom2 }}</p>
     <br>
-
-
-<div class="texte">
-L'histogramme ci-dessous représente le nombre de mails envoyés/reçus pour les 10 employés ayant le plus communiqué avec {{ employe_nom }} {{ employe_prenom }}, dans la période du {{ date_debut }} au {{ date_fin }}.
-</div>
-    <br>
-    <div class="col-md-6" style="margin-left: 15%;">
-        {{disp|safe}}
-    </div>
-
-    <br>
-
-
 <hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
+
+
 <br>
 <div class="texte">
-    Les tableaux ci-dessous représentent le nombre de mails envoyés/reçus pour tous les employés ayant communiqués avec {{ employe_nom }} {{ employe_prenom }}, dans la période du {{ date_debut }} au {{ date_fin }}.
+Les tableau ci-dessous montre les mails échangés entre {{ employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}, ils sont classés par sujet, un tableau représente une conversation.
 </div>
 <br>
 
-<table class="mon_tableau">
-        <tr>
-            <td> Nom</td>
-            <td> Prénom</td>
-            <td>Nombre de mails</td>
-        </tr>
-    {% for item in liste3 %}
-    <tr>
-    <td> {{ item.nom}}</td>
-    <td> {{ item.prenom }}</td>
-    <td> {{ item.nb_mails }}</td>
-    </tr>
-        {% endfor %}
-</table>
-<br>
 
 <br>
 
 <hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
 <br>
 
-<div class="texte">
-    Nous pouvons regarder plus en detail les mails envoyés et reçus par les employés ayant communiqué avec {{ employe_nom }} {{ employe_prenom }}.
-    Le premier tableau représente les mails envoyés par ces employés, et le deuxième tableau représente les mails reçus par ces employés.
-</div>
-<br>
+{% block content %}
+    <!-- Affichage des tableaux pour chaque groupe de sujets -->
+    {% for subject, emails in grouped_emails.items %}
+        <h2>{{ subject }}</h2>
+        <table class="mon_tableau">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sujet</th>
+                    <th>Date</th>
+                    <th>Contenu</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Boucle à travers les e-mails du groupe de sujets actuel -->
+                {% for email in emails %}
+                        <tr>
+                        <td>{{ email.id }}</td>
+                        <td>{{ email.subject }}</td>
+                        <td>{{ email.date }}</td>
+                        <td style="text-align: left;">{% autoescape off %}
+                            <pre>{{ email.content }}</pre>
+                        {% endautoescape %}
+                        </td>
+                        </tr>
 
-
-<div style="display: flex;">
-<div style="flex: 1;">
-
-    <table class="mon_tableau" style="margin-right: 40px;">
-    <tr>
-    <td > Nom</td>
-    <td > Prénom</td>
-    <td > Nombre de mails</td>
-    </tr>
-    {% for item in liste1 %}
-    <tr>
-    <td> {{ item.nom }}</td>
-   <td> {{ item.prenom }}</td>
-    <td> {{ item.nb_mails }}</td>
-    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endfor %}
-    </table>
-    </div>
-<br>
-<br>
+{% endblock %}
 
 
-<div style="flex: 1;">
-    <table class="mon_tableau" style="margin-left: 40px;">
-    <tr>
-    <td> Nom</td>
-    <td> Prénom</td>
-    <td> Nombre de mails</td>
-    </tr>
-    {% for item in liste2 %}
-    <tr>
-    <td> {{ item.nom }}</td>
-   <td> {{ item.prenom }}</td>
-    <td> {{ item.nb_mails }}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </div>
-</div>
+
+
 
 
 

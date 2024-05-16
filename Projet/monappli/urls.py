@@ -16,6 +16,8 @@ urlpatterns = [
     path('PgdNBmail', views.PgdNBmail, name='PgdNBmail'),
     path('requete6', views.requete6, name='requete6'),
     path('Liste_mots', views.Liste_mots, name='Liste_mots'),
-path('mail/<int:mail_id>/', views.detail_mail, name='detail_mail'),
+    path('mail/<int:mail_id>/', views.detail_mail, name='detail_mail'),
+    path('requete7', views.requete7, name='requete7'),
+    path('conv', views.conv, name='conv'),
 
 ]

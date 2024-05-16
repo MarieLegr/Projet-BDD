@@ -82,7 +82,7 @@ img {
 
 
 
-      p { background: rgba(240, 240, 240, .5) ;
+      p {
        padding: 15px ;
        width: 40em ;
        font-style: italic ;
@@ -115,24 +115,10 @@ div.texte { font-size: 22px ;
     }
 
 
-table.mon_tableau  {
-        border-collapse: collapse;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    table.mon_tableau td {
-       border: 2px solid black;
-       padding: 0.3em;
-       font-family: "Sans-serif";
-       font-size: 20px;
-
-    }
-
-
     </style>
 
 <meta charset="utf-8">
- <title>liste communication</title>
+ <title>Attributs d’un employé</title>
 </head>
 <body style="background-color:white;">
 
@@ -150,106 +136,70 @@ table.mon_tableau  {
 
 <img src="https://upload.wikimedia.org/wikipedia/fr/2/2f/EnronLogo.png">
     <br>
-    <h1>Employé ayant communiqué avec {{employe_nom }} {{ employe_prenom }}</h1>
-    <br>
-    <p>Ma date du début : {{ date_debut }}</p>
-    <p>Ma date de fin : {{ date_fin }}</p>
-    <p> Mon employé : {{ employe_nom }} {{ employe_prenom }}</p>
-    <br>
 
 
-<div class="texte">
-L'histogramme ci-dessous représente le nombre de mails envoyés/reçus pour les 10 employés ayant le plus communiqué avec {{ employe_nom }} {{ employe_prenom }}, dans la période du {{ date_debut }} au {{ date_fin }}.
-</div>
+
+    <form action="{% url 'conv' %}" method="post">
+        {% csrf_token %}
+
+    <h1> Conversation </h1>
+
+
     <br>
-    <div class="col-md-6" style="margin-left: 15%;">
-        {{disp|safe}}
+
+    <div class="texte">
+    Cette requête permet de visualiser les interactions d'un employé avec les autres employés de l'entreprise. <br>
+    Une conversation est définie par un échange de mails entre deux employés.
+    </div>
+    <div class="texte">
+    Pour retrouver les conversations entre deux employés, il faut inquiquer leur nome et prénom, ainsi que la période de recherche. <br>
     </div>
 
     <br>
+    <br>
+
+<div> Indiquer le nom du premier employé :</div>
+        <p>
+            Employé recherché :
+            <select name="employer">
+            <option value="">--Sélectionner un employé--</option>
+            {% for employee in employees %}
+                <option value="{{ employee.id }}">{{ employee.nom }} {{employee.prenom}}</option>
+            {% endfor %}
+
+            </select>
+        </p>
+        <div> Indiquer le nom du deuxième employé :</div>
+        <p>
+            Employé recherché :
+            <select name="employes">
+            <option value="">--Sélectionner un employé--</option>
+            {% for employee in employees %}
+                <option value="{{ employee.id }}">{{ employee.nom }} {{employee.prenom}}</option>
+            {% endfor %}
+
+            </select>
+        </p>
+        <br>
+
+<div> Indiquer la période de recherche :</div>
+
+        <p>
 
 
-<hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
-<br>
-<div class="texte">
-    Les tableaux ci-dessous représentent le nombre de mails envoyés/reçus pour tous les employés ayant communiqués avec {{ employe_nom }} {{ employe_prenom }}, dans la période du {{ date_debut }} au {{ date_fin }}.
-</div>
-<br>
+            Date de début:
+            <input type="date" name="date_debut" style="margin-right: 30px;">
 
-<table class="mon_tableau">
-        <tr>
-            <td> Nom</td>
-            <td> Prénom</td>
-            <td>Nombre de mails</td>
-        </tr>
-    {% for item in liste3 %}
-    <tr>
-    <td> {{ item.nom}}</td>
-    <td> {{ item.prenom }}</td>
-    <td> {{ item.nb_mails }}</td>
-    </tr>
-        {% endfor %}
-</table>
-<br>
+            Date de fin:
+            <input type="date" name="date_fin">
 
-<br>
+        </p>
 
-<hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
-<br>
+    <div class="envoi"><input type="submit" value="Rechercher"></div>
 
-<div class="texte">
-    Nous pouvons regarder plus en detail les mails envoyés et reçus par les employés ayant communiqué avec {{ employe_nom }} {{ employe_prenom }}.
-    Le premier tableau représente les mails envoyés par ces employés, et le deuxième tableau représente les mails reçus par ces employés.
-</div>
-<br>
-
-
-<div style="display: flex;">
-<div style="flex: 1;">
-
-    <table class="mon_tableau" style="margin-right: 40px;">
-    <tr>
-    <td > Nom</td>
-    <td > Prénom</td>
-    <td > Nombre de mails</td>
-    </tr>
-    {% for item in liste1 %}
-    <tr>
-    <td> {{ item.nom }}</td>
-   <td> {{ item.prenom }}</td>
-    <td> {{ item.nb_mails }}</td>
-    </tr>
-    {% endfor %}
-    </table>
     </div>
-<br>
-<br>
 
-
-<div style="flex: 1;">
-    <table class="mon_tableau" style="margin-left: 40px;">
-    <tr>
-    <td> Nom</td>
-    <td> Prénom</td>
-    <td> Nombre de mails</td>
-    </tr>
-    {% for item in liste2 %}
-    <tr>
-    <td> {{ item.nom }}</td>
-   <td> {{ item.prenom }}</td>
-    <td> {{ item.nb_mails }}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </div>
-</div>
-
-
-
-
-
-
-
+    <br>
     <br>
 <div class="bande-bas">
     <!-- Texte dans la bande de couleur en bas -->
@@ -258,7 +208,7 @@ L'histogramme ci-dessous représente le nombre de mails envoyés/reçus pour les
     <img src="https://www.univ-angers.fr/_resource/Documents/DCOM/logo/VERTICAL/PAPIER/PNG/ua_v_couleur.png?download=true" alt="Logo UA">
 </div>
 
+</form>
 </body>
 </html>
-
 
