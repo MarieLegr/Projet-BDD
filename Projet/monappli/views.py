@@ -245,7 +245,7 @@ having count(*) > %s;""", [date_debut, date_fin, seuil])
                 DF2 = pd.DataFrame(liste55)
 
                 trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
-                                name='Inerne')
+                                name='Interne')
                 trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
                                 name='Externe')
 
@@ -335,7 +335,7 @@ GROUP BY t.nom, t.prenom;""", [date_debut, date_fin, seuil])
                     DF1= pd.DataFrame(liste22)
                     DF2= pd.DataFrame(liste66)
                     trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
-                                    name='Inerne')
+                                    name='Interne')
                     trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
                                     name='Externe')
                     fig = go.Figure(data=[trace1, trace2])
@@ -405,7 +405,7 @@ having count(*) < %s; """, [date_debut, date_fin, seuil])
                 DF1 = pd.DataFrame(liste33)
                 DF2 = pd.DataFrame(liste77)
                 trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_envoyes'], marker=dict(color='rgb(242, 65, 65)'),
-                                name='Inerne')
+                                name='Interne')
                 trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_envoyes'], marker=dict(color='rgb(47, 118, 128)'),
                                 name='Externe')
 
@@ -487,7 +487,7 @@ GROUP BY t.nom, t.prenom; """, [date_debut, date_fin, seuil])
                 DF1 = pd.DataFrame(liste44)
                 DF2 = pd.DataFrame(liste88)
                 trace1 = go.Bar(x=DF1['nom'], y=DF1['nb_mails_recu'], marker=dict(color='rgb(242, 65, 65)'),
-                                name='Inerne')
+                                name='Interne')
                 trace2 = go.Bar(x=DF2['nom'], y=DF2['nb_mails_recu'], marker=dict(color='rgb(47, 118, 128)'),
                                 name='Externe')
                 fig = go.Figure(data=[trace1, trace2])
