@@ -45,6 +45,10 @@ def couples_employes(request):
         date_fin = request.POST.get('date_fin')
         seuil = request.POST.get('seuil')
 
+        if seuil == "" or int(seuil) < 0 or date_debut == "" or date_fin == "":
+            return render(request, 'requete4.tmpl', {
+            })
+
         with connection.cursor() as cursor:
             cursor.execute("""SELECT
     CASE WHEN e.prenom < f.prenom OR (e.prenom = f.prenom AND e.nom < f.nom) THEN e.prenom ELSE f.prenom END AS prenom_employe1,
@@ -93,13 +97,19 @@ def requete1(request):
 
 def attributs_employes(request):
     if request.method == 'POST':
-        id = request.POST.get('employe')
-        employe = Employee.objects.get(id=id)
-        employe_nom = employe.nom
-        employe_prenom = employe.prenom
+
         adresse_employe = request.POST.get('adresse_employe')
 
+
         if adresse_employe == "":
+            id = request.POST.get('employe')
+            employees = Employee.objects.all()
+            context = {"employees": employees}
+            return render(request, "requete1.tmpl", context=context)
+            employe = Employee.objects.get(id=id)
+            employe_nom = employe.nom
+            employe_prenom = employe.prenom
+
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT e.nom, e.prenom, c.name, am.adressemail
@@ -130,6 +140,7 @@ def attributs_employes(request):
 
 
         else:
+
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT e.nom, e.prenom, c.name, am.adressemail 
@@ -152,6 +163,8 @@ def attributs_employes(request):
             else:
                 coupleadress = []
                 categorie = "Aucune catégorie trouvée."
+                nom_employe = "Aucun employé trouvé."
+                prenom_employe = "Aucun employé trouvé."
 
 
 
@@ -165,6 +178,7 @@ def attributs_employes(request):
             return render(request, 'attributs_employes.tmpl', context)
     else:
         return render(request, 'requete1.tmpl')
+
   
 
 def requete2(request):
@@ -179,6 +193,7 @@ def employeXmail(request):
         date_debut = request.POST.get('date_debut')
         date_fin = request.POST.get('date_fin')
         seuil = request.POST.get('seuil')
+
 
         if seuil == "" or int(seuil) < 0:
             return render(request, 'requete2.tmpl',{
@@ -546,6 +561,10 @@ def requete3(request):
 def List_comu_empl(request):
     if request.method =='POST':
         id = request.POST.get('employe')
+        if id == "":
+            employees = Employee.objects.all()
+            context = {"employees": employees}
+            return render(request, "requete3.tmpl", context=context)
         employe = Employee.objects.get(id=id)
         employe_nom = employe.nom
         employe_prenom = employe.prenom
@@ -670,6 +689,11 @@ def PgdNBmail(request):
         date_fin = request.POST.get('date_fin')
         echange = request.POST.get('IntExt')
 
+        if echange == '' or date_debut == '' or date_fin == '':
+            return render(request, 'requete5.tmpl', {
+            })
+
+
         if echange == 'Interne/Interne':
             with connection.cursor() as cursor:
                 cursor.execute("""SELECT
@@ -692,7 +716,7 @@ ORDER BY nombre_de_mails DESC;""", [date_debut, date_fin])
                         'nb_mails': nb_mails
                     })
                 liste = sorted(liste, key=lambda x: x['nb_mails'], reverse=True)
-                liste1 = liste[:5]
+                liste1 = liste[:10]
 
                 if len(liste1)>0:
 
@@ -908,15 +932,21 @@ def requete7(request):
 def conv(request):
     if request.method =='POST':
         id1 = request.POST.get('employer')
+        id2 = request.POST.get('employes')
+        if id1 == "" or id2 == "":
+            employees = Employee.objects.all()
+            context = {"employees": employees}
+            return render(request, "requete7.tmpl", context=context)
+
+
         employer = Employee.objects.get(id=id1)
         employe_nom1 = employer.nom
         employe_prenom1 = employer.prenom
-        date_debut = request.POST.get('date_debut')
-        date_fin = request.POST.get('date_fin')
-        id2 = request.POST.get('employes')
+
         employes = Employee.objects.get(id=id2)
         employe_nom2 = employes.nom
         employe_prenom2 = employes.prenom
+
 
         with connection.cursor() as cursor:
             cursor.execute("""select m.id, m.content, m.subject, m.date from monappli_mail m
@@ -925,9 +955,9 @@ inner join monappli_adressemail a on m.sender_id = a.id
 inner join monappli_employee e on a.employee_id_id = e.id
 inner join monappli_adressemail b on r.receiver_id = b.id
 inner join monappli_employee f on b.employee_id_id = f.id
-where (f.id = %s and e.id = %s) or (f.id = %s and e.id = %s) and m.date between %s and %s
+where (f.id = %s and e.id = %s) or (f.id = %s and e.id = %s)
 order by m.subject, m.date asc;
-""", [id1, id2, id2,id1, date_debut, date_fin])
+""", [id1, id2, id2,id1])
 
             rows = cursor.fetchall()
 
@@ -956,8 +986,7 @@ order by m.subject, m.date asc;
             'employe_prenom1': employe_prenom1,
             'employe_nom2': employe_nom2,
             'employe_prenom2': employe_prenom2,
-            'date_debut': date_debut,
-            'date_fin': date_fin,
+
         }
         return render(request, 'conv.tmpl', context)
     else:

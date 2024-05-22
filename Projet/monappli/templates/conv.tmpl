@@ -154,15 +154,14 @@ div.texte { font-size: 22px ;
     <br>
     <h1>Conversations entre {{employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}</h1>
     <br>
-    <p>Ma date de début : {{ date_debut }}</p>
-    <p>Ma date de fin : {{ date_fin }}</p>
+
     <p> Mon premier employé : {{ employe_nom1 }} {{ employe_prenom1 }}</p>
     <p> Mon deuxième employé : {{ employe_nom2 }} {{ employe_prenom2 }}</p>
     <br>
 <hr class="detail-separator" style="max-width: 600px; border-color : rgba(0, 0, 0, 1);">
 
 {% if liste1|length_is:"0" %}
-    <div> Il n'y a pas eu de conversations entre le {{ date_debut }} et le {{ date_fin }}, pour  {{employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}  </div>
+    <div> Il n'y a pas eu de conversations pour  {{employe_nom1 }} {{ employe_prenom1 }} et {{ employe_nom2 }} {{ employe_prenom2 }}  </div>
     <br>
     <br>
     <br>
